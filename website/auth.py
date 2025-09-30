@@ -16,10 +16,11 @@ def login():
             WHERE student_email = %s AND student_id = %s
         '''
         cursor.execute(query, (email, ID))
-        account = cursor.fetchall()
+        account = cursor.fetchone()
 
         if account:
-            return redirect(url_for('views.home', role='student'))
+            student_id = account["student_id"]
+            return redirect(url_for('views.home', student_id=student_id))
         else:
             flash("Sai ID hoặc Email, vui lòng thử lại!")
 

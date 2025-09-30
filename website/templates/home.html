@@ -12,11 +12,11 @@
   <aside class="w-64 bg-white shadow-lg rounded-r-3xl p-5 flex flex-col justify-between">
     <div>
       <h1 class="text-2xl font-bold text-blue-600 mb-6">QLSV</h1>
-      <nav class="space-y-3">
-        <a href="#" class="block p-3 rounded-xl bg-blue-100 hover:bg-blue-200">🏫 Lớp hành chính</a>
-        <a href="#" class="block p-3 rounded-xl hover:bg-blue-100">📘 Lớp tín chỉ</a>
-        <a href="#" class="block p-3 rounded-xl hover:bg-blue-100">📝 Kết quả học tập</a>
-        <a href="#" class="block p-3 rounded-xl hover:bg-blue-100">🔔 Thông báo</a>
+      <nav id="sidebar" class="space-y-3">
+        <button data-target="hoso" class="w-full text-left block p-3 rounded-xl bg-blue-200 active-link">👤 Hồ sơ</button>
+        <button data-target="lop-hanh-chinh" class="w-full text-left block p-3 rounded-xl hover:bg-blue-200">🏫 Lớp hành chính</button>
+        <button data-target="lop-tin-chi" class="w-full text-left block p-3 rounded-xl hover:bg-blue-200">📘 Lớp tín chỉ</button>
+        <button data-target="hoc-tap" class="w-full text-left block p-3 rounded-xl hover:bg-blue-200">📝 Kết quả học tập</button>
       </nav>
     </div>
     <!-- Chatbot icon -->
@@ -36,17 +36,45 @@
       </a>
     </div>
 
-    <h2 class="text-3xl font-semibold text-gray-700 mb-5">Dashboard Sinh viên</h2>
-    <div class="bg-white shadow-xl rounded-2xl p-5">
-      <p class="text-gray-600">Chọn chức năng ở sidebar để xem chi tiết.</p>
-    </div>
+    <!-- Nội dung hiển thị động -->
+    <!-- Nội dung hiển thị động -->
+<div id="content">
+  <!-- Mặc định hiện Hồ sơ -->
+  <h1 class="text-3xl font-bold text-gray-700 mb-4">👤 Hồ sơ</h1>
+  <hr class="border-gray-300 mb-6">
+
+  <div class="bg-white shadow rounded-xl p-6">
+    <table class="w-full text-left border-collapse">
+      <tr>
+        <th class="p-2 text-gray-600">Mã SV</th>
+        <td class="p-2 font-semibold text-gray-800">{{ student.student_id }}</td>
+      </tr>
+      <tr>
+        <th class="p-2 text-gray-600">Họ tên</th>
+        <td class="p-2">{{ student.student_name }}</td>
+      </tr>
+      <tr>
+        <th class="p-2 text-gray-600">Email</th>
+        <td class="p-2">{{ student.student_email }}</td>
+      </tr>
+      <tr>
+        <th class="p-2 text-gray-600">Lớp hành chính</th>
+        <td class="p-2">{{ student.administrative_class }}</td>
+      </tr>
+      <tr>
+        <th class="p-2 text-gray-600">CPA</th>
+        <td class="p-2 text-blue-600 font-bold">{{ student.CPA }}</td>
+      </tr>
+    </table>
+  </div>
+</div>
+
   </main>
 
   <!-- Chatbot box -->
   <div id="chatbotBox" class="hidden fixed bottom-20 left-72 w-80 bg-white shadow-lg rounded-2xl p-4">
     <h3 class="text-lg font-semibold text-blue-600 mb-3">Chatbot</h3>
     <div class="h-40 overflow-y-auto border rounded-lg p-2 mb-3 text-sm text-gray-600">
-      <!-- Tin nhắn sẽ hiển thị ở đây -->
       <p><strong>Bot:</strong> Xin chào! Tôi có thể giúp gì cho bạn?</p>
     </div>
     <form class="flex space-x-2">
@@ -58,6 +86,60 @@
   <script>
     feather.replace();
 
+    const buttons = document.querySelectorAll("#sidebar button");
+    const content = document.getElementById("content");
+
+    const pages = {
+      "lop-hanh-chinh": {
+        title: "🏫 Lớp hành chính",
+        text: "Thông tin về lớp hành chính của bạn."
+      },
+      "lop-tin-chi": {
+        title: "📘 Lớp tín chỉ",
+        text: "Danh sách lớp tín chỉ mà bạn đã đăng ký."
+      },
+      "hoc-tap": {
+        title: "📝 Kết quả học tập",
+        text: "Điểm số và kết quả học tập của bạn."
+      }
+    };
+
+    buttons.forEach(btn => {
+      btn.addEventListener("click", () => {
+        // Xóa active cũ
+        buttons.forEach(b => b.classList.remove("bg-blue-200", "active-link"));
+        // Active nút mới
+        btn.classList.add("bg-blue-200", "active-link");
+
+        const target = btn.dataset.target;
+
+        if (target === "hoso") {
+          // Load lại nội dung Hồ sơ
+          content.innerHTML = `
+            <h1 class="text-3xl font-bold text-gray-700">👤 Hồ sơ</h1>
+            <hr class="border-gray-300 mb-6">
+            
+            <div class="bg-white shadow rounded-xl p-6">
+              <table class="w-full text-left border-collapse">
+                <tr><th class="p-2 text-gray-600">Mã SV</th><td class="p-2 font-semibold text-gray-800">{{ student.student_id }}</td></tr>
+                <tr><th class="p-2 text-gray-600">Họ tên</th><td class="p-2">{{ student.student_name }}</td></tr>
+                <tr><th class="p-2 text-gray-600">Email</th><td class="p-2">{{ student.student_email }}</td></tr>
+                <tr><th class="p-2 text-gray-600">Lớp hành chính</th><td class="p-2">{{ student.administrative_class }}</td></tr>
+                <tr><th class="p-2 text-gray-600">CPA</th><td class="p-2 text-blue-600 font-bold">{{ student.CPA }}</td></tr>
+              </table>
+            </div>
+          `;
+        } else {
+          // Load các tab khác
+          content.innerHTML = `
+            <h1 class="text-3xl font-bold text-gray-700">${pages[target].title}</h1>
+            <p class="mt-4 text-gray-600">${pages[target].text}</p>
+          `;
+        }
+      });
+    });
+
+    // Chatbot toggle
     const chatbotToggle = document.getElementById('chatbotToggle');
     const chatbotBox = document.getElementById('chatbotBox');
     chatbotToggle.addEventListener('click', () => {
