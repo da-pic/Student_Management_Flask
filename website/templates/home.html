@@ -29,12 +29,6 @@
 
   <!-- Main content -->
   <main class="flex-1 p-10 relative">
-    <!-- Top right student info icon -->
-    <div class="absolute top-5 right-5">
-      <a href="#" class="p-2 bg-white rounded-full shadow hover:bg-blue-100">
-        <i data-feather="user" class="w-6 h-6 text-blue-600"></i>
-      </a>
-    </div>
 
     <!-- Nội dung hiển thị động -->
     <!-- Nội dung hiển thị động -->
@@ -148,3 +142,34 @@
   </script>
 </body>
 </html>
+
+<!-- Tab lớp hành chính -->
+{% if active_tab == "lop-hanh-chinh" %}
+  <h1 class="text-3xl font-bold text-gray-700 mb-4">🏫 Lớp hành chính</h1>
+  <hr class="border-gray-300 mb-6">
+
+  <div class="bg-white shadow rounded-xl p-6">
+    <h2 class="text-xl font-semibold text-blue-600 mb-4">
+      Danh sách sinh viên lớp {{ student.administrative_class }}
+    </h2>
+    <table class="w-full text-left border-collapse">
+      <thead>
+        <tr class="bg-blue-100 text-gray-700">
+          <th class="p-2">Mã SV</th>
+          <th class="p-2">Họ tên</th>
+          <th class="p-2">Email</th>
+          <th class="p-2">CPA</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for s in students %}
+        <tr class="border-b hover:bg-blue-50">
+          <td class="p-2 font-semibold text-gray-800">{{ s.student_id }}</td>
+          <td class="p-2">{{ s.student_name }}</td>
+          <td class="p-2">{{ s.student_email }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% endif %}
