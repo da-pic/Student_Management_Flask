@@ -13,12 +13,25 @@
     <div>
       <h1 class="text-2xl font-bold text-blue-600 mb-6">QLSV</h1>
       <nav id="sidebar" class="space-y-3">
-        <button data-target="hoso" class="w-full text-left block p-3 rounded-xl bg-blue-200 active-link">👤 Hồ sơ</button>
-        <button data-target="lop-hanh-chinh" class="w-full text-left block p-3 rounded-xl hover:bg-blue-200">🏫 Lớp hành chính</button>
-        <button data-target="lop-tin-chi" class="w-full text-left block p-3 rounded-xl hover:bg-blue-200">📘 Lớp tín chỉ</button>
-        <button data-target="hoc-tap" class="w-full text-left block p-3 rounded-xl hover:bg-blue-200">📝 Kết quả học tập</button>
+        <a href="/home/{{ student.student_id }}?tab=hoso" 
+           class="w-full block p-3 rounded-xl {{ 'bg-blue-200' if active_tab=='hoso' else '' }}">
+           👤 Hồ sơ
+        </a>
+        <a href="/home/{{ student.student_id }}?tab=lop-hanh-chinh" 
+           class="w-full block p-3 rounded-xl {{ 'bg-blue-200' if active_tab=='lop-hanh-chinh' else '' }}">
+           🏫 Lớp hành chính
+        </a>
+        <a href="/home/{{ student.student_id }}?tab=lop-tin-chi" 
+           class="w-full block p-3 rounded-xl {{ 'bg-blue-200' if active_tab=='lop-tin-chi' else '' }}">
+           📘 Lớp tín chỉ
+        </a>
+        <a href="/home/{{ student.student_id }}?tab=hoc-tap" 
+           class="w-full block p-3 rounded-xl {{ 'bg-blue-200' if active_tab=='hoc-tap' else '' }}">
+           📝 Kết quả học tập
+        </a>
       </nav>
     </div>
+
     <!-- Chatbot icon -->
     <div class="mb-5">
       <button id="chatbotToggle" class="p-3 bg-blue-500 text-white rounded-full shadow-lg hover:bg-blue-600">
@@ -29,40 +42,47 @@
 
   <!-- Main content -->
   <main class="flex-1 p-10 relative">
-
-    <!-- Nội dung hiển thị động -->
-    <!-- Nội dung hiển thị động -->
-<div id="content">
-  <!-- Mặc định hiện Hồ sơ -->
-  <h1 class="text-3xl font-bold text-gray-700 mb-4">👤 Hồ sơ</h1>
-  <hr class="border-gray-300 mb-6">
-
-  <div class="bg-white shadow rounded-xl p-6">
-    <table class="w-full text-left border-collapse">
-      <tr>
-        <th class="p-2 text-gray-600">Mã SV</th>
-        <td class="p-2 font-semibold text-gray-800">{{ student.student_id }}</td>
-      </tr>
-      <tr>
-        <th class="p-2 text-gray-600">Họ tên</th>
-        <td class="p-2">{{ student.student_name }}</td>
-      </tr>
-      <tr>
-        <th class="p-2 text-gray-600">Email</th>
-        <td class="p-2">{{ student.student_email }}</td>
-      </tr>
-      <tr>
-        <th class="p-2 text-gray-600">Lớp hành chính</th>
-        <td class="p-2">{{ student.administrative_class }}</td>
-      </tr>
-      <tr>
-        <th class="p-2 text-gray-600">CPA</th>
-        <td class="p-2 text-blue-600 font-bold">{{ student.CPA }}</td>
-      </tr>
-    </table>
-  </div>
-</div>
-
+    {% if active_tab == 'hoso' %}
+      <h1 class="text-3xl font-bold text-gray-700 mb-4">👤 Hồ sơ</h1>
+      <hr class="border-gray-300 mb-6">
+      <div class="bg-white shadow rounded-xl p-6">
+        <table class="w-full text-left border-collapse">
+          <tr><th class="p-2 text-gray-600">Mã SV</th><td class="p-2 font-semibold text-gray-800">{{ student.student_id }}</td></tr>
+          <tr><th class="p-2 text-gray-600">Họ tên</th><td class="p-2">{{ student.student_name }}</td></tr>
+          <tr><th class="p-2 text-gray-600">Email</th><td class="p-2">{{ student.student_email }}</td></tr>
+          <tr><th class="p-2 text-gray-600">Lớp hành chính</th><td class="p-2">{{ student.administrative_class }}</td></tr>
+          <tr><th class="p-2 text-gray-600">CPA</th><td class="p-2 text-blue-600 font-bold">{{ student.CPA }}</td></tr>
+        </table>
+      </div>
+    {% elif active_tab == 'lop-hanh-chinh' %}
+      <h1 class="text-3xl font-bold mb-6">🏫 Danh sách lớp hành chính: {{ student.administrative_class }}</h1>
+      <table class="w-full border border-gray-300">
+        <thead class="bg-gray-100">
+          <tr>
+            <th class="px-3 py-2 border">Mã SV</th>
+            <th class="px-3 py-2 border">Họ tên</th>
+            <th class="px-3 py-2 border">Email</th>
+            <th class="px-3 py-2 border">CPA</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for s in students %}
+          <tr>
+            <td class="px-3 py-2 border">{{ s.student_id }}</td>
+            <td class="px-3 py-2 border">{{ s.student_name }}</td>
+            <td class="px-3 py-2 border">{{ s.student_email }}</td>
+            <td class="px-3 py-2 border">{{ s.CPA }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% elif active_tab == 'hoc-tap' %}
+      <h1 class="text-3xl font-bold text-gray-700">📝 Kết quả học tập</h1>
+      <p class="mt-4 text-gray-600">Điểm số và kết quả học tập của bạn.</p>
+    {% else %}
+      <h1 class="text-3xl font-bold text-gray-700">📘 Lớp tín chỉ</h1>
+      <p class="mt-4 text-gray-600">Danh sách lớp tín chỉ mà bạn đã đăng ký.</p>
+    {% endif %}
   </main>
 
   <!-- Chatbot box -->
@@ -79,60 +99,6 @@
 
   <script>
     feather.replace();
-
-    const buttons = document.querySelectorAll("#sidebar button");
-    const content = document.getElementById("content");
-
-    const pages = {
-      "lop-hanh-chinh": {
-        title: "🏫 Lớp hành chính",
-        text: "Thông tin về lớp hành chính của bạn."
-      },
-      "lop-tin-chi": {
-        title: "📘 Lớp tín chỉ",
-        text: "Danh sách lớp tín chỉ mà bạn đã đăng ký."
-      },
-      "hoc-tap": {
-        title: "📝 Kết quả học tập",
-        text: "Điểm số và kết quả học tập của bạn."
-      }
-    };
-
-    buttons.forEach(btn => {
-      btn.addEventListener("click", () => {
-        // Xóa active cũ
-        buttons.forEach(b => b.classList.remove("bg-blue-200", "active-link"));
-        // Active nút mới
-        btn.classList.add("bg-blue-200", "active-link");
-
-        const target = btn.dataset.target;
-
-        if (target === "hoso") {
-          // Load lại nội dung Hồ sơ
-          content.innerHTML = `
-            <h1 class="text-3xl font-bold text-gray-700">👤 Hồ sơ</h1>
-            <hr class="border-gray-300 mb-6">
-            
-            <div class="bg-white shadow rounded-xl p-6">
-              <table class="w-full text-left border-collapse">
-                <tr><th class="p-2 text-gray-600">Mã SV</th><td class="p-2 font-semibold text-gray-800">{{ student.student_id }}</td></tr>
-                <tr><th class="p-2 text-gray-600">Họ tên</th><td class="p-2">{{ student.student_name }}</td></tr>
-                <tr><th class="p-2 text-gray-600">Email</th><td class="p-2">{{ student.student_email }}</td></tr>
-                <tr><th class="p-2 text-gray-600">Lớp hành chính</th><td class="p-2">{{ student.administrative_class }}</td></tr>
-                <tr><th class="p-2 text-gray-600">CPA</th><td class="p-2 text-blue-600 font-bold">{{ student.CPA }}</td></tr>
-              </table>
-            </div>
-          `;
-        } else {
-          // Load các tab khác
-          content.innerHTML = `
-            <h1 class="text-3xl font-bold text-gray-700">${pages[target].title}</h1>
-            <p class="mt-4 text-gray-600">${pages[target].text}</p>
-          `;
-        }
-      });
-    });
-
     // Chatbot toggle
     const chatbotToggle = document.getElementById('chatbotToggle');
     const chatbotBox = document.getElementById('chatbotBox');
@@ -142,34 +108,3 @@
   </script>
 </body>
 </html>
-
-<!-- Tab lớp hành chính -->
-{% if active_tab == "lop-hanh-chinh" %}
-  <h1 class="text-3xl font-bold text-gray-700 mb-4">🏫 Lớp hành chính</h1>
-  <hr class="border-gray-300 mb-6">
-
-  <div class="bg-white shadow rounded-xl p-6">
-    <h2 class="text-xl font-semibold text-blue-600 mb-4">
-      Danh sách sinh viên lớp {{ student.administrative_class }}
-    </h2>
-    <table class="w-full text-left border-collapse">
-      <thead>
-        <tr class="bg-blue-100 text-gray-700">
-          <th class="p-2">Mã SV</th>
-          <th class="p-2">Họ tên</th>
-          <th class="p-2">Email</th>
-          <th class="p-2">CPA</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for s in students %}
-        <tr class="border-b hover:bg-blue-50">
-          <td class="p-2 font-semibold text-gray-800">{{ s.student_id }}</td>
-          <td class="p-2">{{ s.student_name }}</td>
-          <td class="p-2">{{ s.student_email }}</td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-  </div>
-{% endif %}
