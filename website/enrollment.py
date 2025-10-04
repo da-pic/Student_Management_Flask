@@ -47,7 +47,7 @@ def register_courses(student_id):
         conn.rollback()
         has_error = True
         print(f"⚠️ Lỗi SQL: {e}")
-        flash(f"⚠️ bạn đã đăng ký {cc_id}", "error")
+        flash(f"⚠️ bạn đã đăng ký lớp học này!", "error")
 
     finally:
         cursor.close()
