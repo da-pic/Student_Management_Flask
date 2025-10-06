@@ -29,6 +29,19 @@
            class="w-full block p-3 rounded-xl {{ 'bg-blue-200' if active_tab=='hoc-tap' else '' }}">
            📝 Kết quả học tập
         </a>
+
+        <!-- Nút Tính năng -->
+        <div class="mt-8 bg-white shadow rounded-xl">
+          <button id="toggleFeatures" class="w-full flex items-center justify-between p-4 text-left font-semibold text-blue-600">
+            🔧 Tính năng
+            <i id="arrow" data-feather="chevron-down" class="transition-transform"></i>
+          </button>
+          <div id="featuresList" class="hidden border-t p-4 space-y-2">
+            <a href="dangky.html" class="block p-3 bg-blue-100 rounded-lg hover:bg-blue-200">📌 Đăng ký tín chỉ</a>
+            <a href="khungchuongtrinh.html" class="block p-3 bg-blue-100 rounded-lg hover:bg-blue-200">📌 Khung chương trình đào tạo</a>
+            <a href="lichthi.html" class="block p-3 bg-blue-100 rounded-lg hover:bg-blue-200">📌 Lịch thi</a>
+          </div>
+        </div>
       </nav>
     </div>
 
@@ -54,6 +67,7 @@
           <tr><th class="p-2 text-gray-600">CPA</th><td class="p-2 text-blue-600 font-bold">{{ student.CPA }}</td></tr>
         </table>
       </div>
+
     {% elif active_tab == 'lop-hanh-chinh' %}
       <h1 class="text-3xl font-bold mb-6">🏫 Danh sách lớp hành chính: {{ student.administrative_class }}</h1>
       <table class="w-full border border-gray-300">
@@ -76,12 +90,35 @@
           {% endfor %}
         </tbody>
       </table>
-    {% elif active_tab == 'hoc-tap' %}
-      <h1 class="text-3xl font-bold text-gray-700">📝 Kết quả học tập</h1>
-      <p class="mt-4 text-gray-600">Điểm số và kết quả học tập của bạn.</p>
-    {% else %}
+
+    {% elif active_tab == 'lop-tin-chi' %}
       <h1 class="text-3xl font-bold text-gray-700">📘 Lớp tín chỉ</h1>
       <p class="mt-4 text-gray-600">Danh sách lớp tín chỉ mà bạn đã đăng ký.</p>
+
+    {% elif active_tab == 'hoc-tap' %}
+      <h1 class="text-3xl font-bold text-gray-700">📝 Kết quả học tập</h1>
+      <div class="bg-white shadow rounded-xl p-6 mt-4">
+        <table class="w-full text-left border-collapse">
+          <tr>
+            <th class="p-2 text-gray-600">Môn học</th>
+            <th class="p-2 text-gray-600">Chuyên cần</th>
+            <th class="p-2 text-gray-600">Giữa kỳ</th>
+            <th class="p-2 text-gray-600">Cuối kỳ</th>
+          </tr>
+          {% for s in scores %}
+          <tr>
+            <td class="p-2">{{ s.course_name }}</td>
+            <td class="p-2">{{ s.attendane_scr }}</td>
+            <td class="p-2">{{ s.midterm_scr }}</td>
+            <td class="p-2">{{ s.finalterm_scr }}</td>
+          </tr>
+          {% else %}
+          <tr>
+            <td colspan="4" class="p-2 text-center text-gray-500">Chưa có dữ liệu điểm</td>
+          </tr>
+          {% endfor %}
+        </table>
+      </div>
     {% endif %}
   </main>
 
@@ -99,6 +136,17 @@
 
   <script>
     feather.replace();
+
+    // Toggle Tính năng
+    const toggleBtn = document.getElementById("toggleFeatures");
+    const featuresList = document.getElementById("featuresList");
+    const arrow = document.getElementById("arrow");
+
+    toggleBtn.addEventListener("click", () => {
+      featuresList.classList.toggle("hidden");
+      arrow.classList.toggle("rotate-180");
+    });
+
     // Chatbot toggle
     const chatbotToggle = document.getElementById('chatbotToggle');
     const chatbotBox = document.getElementById('chatbotBox');
