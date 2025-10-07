@@ -21,6 +21,17 @@
 <body class="bg-light d-flex justify-content-center align-items-center vh-100">
 
     <div class="card shadow-lg p-4" style="width: 28rem; border-radius: 1rem;">
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <div class="mb-3">
+            {% for message in messages %}
+                <div class="alert alert-danger" role="alert">
+                {{ message }}
+                </div>
+            {% endfor %}
+            </div>
+        {% endif %}
+        {% endwith %}
         <h3 class="text-center mb-4 text-primary">Login</h3>
         <form method="POST" action="/">
             <div class="mb-3">

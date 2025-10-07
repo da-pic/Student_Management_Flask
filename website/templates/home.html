@@ -37,9 +37,10 @@
             <i id="arrow" data-feather="chevron-down" class="transition-transform"></i>
           </button>
           <div id="featuresList" class="hidden border-t p-4 space-y-2">
-            <a href="dangky.html" class="block p-3 bg-blue-100 rounded-lg hover:bg-blue-200">📌 Đăng ký tín chỉ</a>
-            <a href="khungchuongtrinh.html" class="block p-3 bg-blue-100 rounded-lg hover:bg-blue-200">📌 Khung chương trình đào tạo</a>
-            <a href="lichthi.html" class="block p-3 bg-blue-100 rounded-lg hover:bg-blue-200">📌 Lịch thi</a>
+            <a href="{{ url_for('enrollment.enrollment_page', student_id=student.student_id) }}" 
+            class="block p-3 bg-blue-100 rounded-lg hover:bg-blue-200">
+            📌 Đăng ký tín chỉ
+            </a>
           </div>
         </div>
       </nav>
@@ -93,7 +94,26 @@
 
     {% elif active_tab == 'lop-tin-chi' %}
       <h1 class="text-3xl font-bold text-gray-700">📘 Lớp tín chỉ</h1>
-      <p class="mt-4 text-gray-600">Danh sách lớp tín chỉ mà bạn đã đăng ký.</p>
+      <table class="w-full border border-gray-300">
+        <thead class="bg-gray-100">
+          <tr>
+            <th class="px-3 py-2 border">Môn Học</th>
+            <th class="px-3 py-2 border">Mã Lớp</th>
+            <th class="px-3 py-2 border">Giảng viên</th>
+            <th class="px-3 py-2 border">Số tín chỉ</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for s in course_class %}
+          <tr>
+            <td class="px-3 py-2 border">{{ s.course_name }}</td>
+            <td class="px-3 py-2 border">{{ s.course_class_id }}</td>
+            <td class="px-3 py-2 border">{{ s.lecturer_name }}</td>
+            <td class="px-3 py-2 border">{{ s.volume }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
 
     {% elif active_tab == 'hoc-tap' %}
       <h1 class="text-3xl font-bold text-gray-700">📝 Kết quả học tập</h1>
@@ -104,6 +124,7 @@
             <th class="p-2 text-gray-600">Chuyên cần</th>
             <th class="p-2 text-gray-600">Giữa kỳ</th>
             <th class="p-2 text-gray-600">Cuối kỳ</th>
+            <th class="p-2 text-gray-600">Tổng kết</th>
           </tr>
           {% for s in scores %}
           <tr>
@@ -111,10 +132,7 @@
             <td class="p-2">{{ s.attendane_scr }}</td>
             <td class="p-2">{{ s.midterm_scr }}</td>
             <td class="p-2">{{ s.finalterm_scr }}</td>
-          </tr>
-          {% else %}
-          <tr>
-            <td colspan="4" class="p-2 text-center text-gray-500">Chưa có dữ liệu điểm</td>
+            <td class="p-2">{{ s.final_grade }}</td>
           </tr>
           {% endfor %}
         </table>

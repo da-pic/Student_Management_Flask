@@ -1,67 +1,15 @@
-# Student table.
-CREATE TABLE Student (
-    student_id VARCHAR(20) PRIMARY KEY,
-    administrative_class VARCHAR(50),
-    student_name VARCHAR(100),
-    student_gender VARCHAR(10),
-    student_bd DATE,
-    student_address VARCHAR(200),
-    student_contact VARCHAR(20),
-    student_email VARCHAR(100),
-    CPA DECIMAL(3,2)
-);
+ALTER TABLE proposed_scr
+ADD COLUMNS lecturer_id varchar(20);
 
-# Course table.
-CREATE TABLE Course (
-    course_id VARCHAR(20) PRIMARY KEY,
-    course_name VARCHAR(100)
-);
+ALTER TABLE course_class
+DROP column volume;
 
-# Lecturer table.
-CREATE TABLE Lecturer (
-    lecturer_id VARCHAR(20) PRIMARY KEY,
-    lecturer_name VARCHAR(100),
-    lecturer_contact VARCHAR(20),
-    lecturer_email VARCHAR(100)
-);
+ALTER TABLE course
+ADD column volume INT;
 
-# Course Class table.
-CREATE TABLE Course_Class (
-    course_class_id VARCHAR(20) PRIMARY KEY,
-    volume int,	T
-    lecturer_id VARCHAR(20),
-    course_id VARCHAR(20),
-    FOREIGN KEY (lecturer_id) REFERENCES Lecturer(lecturer_id),
-    FOREIGN KEY (course_id) REFERENCES Course(course_id)
-);
+ALTER TABLE Score
+ADD column final_grade decimal(4, 2);
 
-# Enrollment table: (n-m) relationship between Student - Course Class.
-CREATE TABLE Enrollment (
-    student_id VARCHAR(20),
-    course_class_id VARCHAR(20),
-    PRIMARY KEY (student_id, course_class_id),
-    FOREIGN KEY (student_id) REFERENCES Student(student_id),
-    FOREIGN KEY (course_class_id) REFERENCES Course_Class(course_class_id)
-);
+ALTER TABLE proposed_scr
+ADD CONSTRAINT FOREIGN KEY lecturer_id REFERENCES Lecturer(lecturer_id);
 
-# Score table.
-CREATE TABLE Score (
-    student_id VARCHAR(20),
-    course_id VARCHAR(20),
-    attendane_scr DECIMAL(3,1),
-    midterm_scr DECIMAL(3,1),
-    finalterm_scr DECIMAL(3,1),
-    PRIMARY KEY (student_id, course_id),
-    FOREIGN KEY (student_id) REFERENCES Student(student_id), 
-    FOREIGN KEY (course_id) REFERENCES Course(course_id)
-);
-
-create table proposed_scr(
-	proposal_id int auto_increment primary key,
-	proposed_attendance_scr decimal(3, 1),
-    proposed_midterm_scr decimal(3, 1),
-	proposed_finalterm_scr decimal(3, 1),
-    student_id varchar(20),
-    course_id varchar(20),
-    foreign key (student_id, course_id) references score(student_id, course_id)
-);
