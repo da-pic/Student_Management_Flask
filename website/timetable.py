@@ -54,5 +54,6 @@ def timetable_page(student_id):
         timetable_data=timetable_data,
         week=week,
         start_of_week=start_of_week,
-        end_of_week=end_of_week
+        end_of_week=end_of_week,
+        student_id=student_id
     )

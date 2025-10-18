@@ -78,7 +78,7 @@
       <table class="w-full border border-gray-300">
         <thead class="bg-gray-100">
           <tr>
-            <th class="px-3 py-2 border">Mã SV</th>
+            <th class="px-3 py-2 border ">Mã SV</th>
             <th class="px-3 py-2 border">Họ tên</th>
             <th class="px-3 py-2 border">Email</th>
             <th class="px-3 py-2 border">CPA</th>
@@ -87,10 +87,10 @@
         <tbody>
           {% for s in students %}
           <tr>
-            <td class="px-3 py-2 border">{{ s.student_id }}</td>
-            <td class="px-3 py-2 border">{{ s.student_name }}</td>
-            <td class="px-3 py-2 border">{{ s.student_email }}</td>
-            <td class="px-3 py-2 border">{{ s.CPA }}</td>
+            <td class="px-3 py-2 border text-center">{{ s.student_id }}</td>
+            <td class="px-3 py-2 border text-center">{{ s.student_name }}</td>
+            <td class="px-3 py-2 border text-center">{{ s.student_email }}</td>
+            <td class="px-3 py-2 border text-center">{{ s.CPA }}</td>
           </tr>
           {% endfor %}
         </tbody>
@@ -110,10 +110,10 @@
         <tbody>
           {% for s in course_class %}
           <tr>
-            <td class="px-3 py-2 border">{{ s.course_name }}</td>
-            <td class="px-3 py-2 border">{{ s.course_class_id }}</td>
-            <td class="px-3 py-2 border">{{ s.lecturer_name }}</td>
-            <td class="px-3 py-2 border">{{ s.volume }}</td>
+            <td class="px-3 py-2 border text-center">{{ s.course_name }}</td>
+            <td class="px-3 py-2 border text-center">{{ s.course_class_id }}</td>
+            <td class="px-3 py-2 border text-center">{{ s.lecturer_name }}</td>
+            <td class="px-3 py-2 border text-center">{{ s.volume }}</td>
           </tr>
           {% endfor %}
         </tbody>

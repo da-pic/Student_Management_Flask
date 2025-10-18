@@ -20,7 +20,7 @@
             height: 60px;
         }
         .class-block {
-            background-color: #83b3e6 !important; /* xanh dương đậm */
+            background-color: #83b3e6 !important;
             color: white;
             font-weight: 500;
             height: 100%;
@@ -38,70 +38,77 @@
         }
     </style>
 </head>
+
 <body>
-<div class="container py-4">
-    <div class="d-flex justify-content-between align-items-center">
-        <a href="?week={{ week - 1 }}" class="btn btn-outline-primary nav-btn {% if week <= 1 %}disabled{% endif %}">⬅ Tuần trước</a>
-        <h4 class="week-header" id="weekTitle">
-            Tuần {{ week }} ({{ start_of_week.strftime("%d/%m") }} - {{ end_of_week.strftime("%d/%m") }})
-        </h4>
-        <a href="?week={{ week + 1 }}" class="btn btn-outline-primary nav-btn">Tuần sau ➡</a>
+
+    <a href="{{ url_for('views.home', student_id=student_id) }}"
+       class="btn btn-secondary position-fixed top-0 start-0 m-3">
+        ⬅️ Quay lại
+    </a>
+
+    <div class="container py-4">
+        <div class="d-flex justify-content-between align-items-center">
+            <a href="?week={{ week - 1 }}" class="btn btn-outline-primary nav-btn {% if week <= 1 %}disabled{% endif %}">⬅ Tuần trước</a>
+            <h4 class="week-header" id="weekTitle">
+                Tuần {{ week }} ({{ start_of_week.strftime("%d/%m") }} - {{ end_of_week.strftime("%d/%m") }})
+            </h4>
+            <a href="?week={{ week + 1 }}" class="btn btn-outline-primary nav-btn">Tuần sau ➡</a>
+        </div>
+
+        <table class="table timetable mt-3">
+            <thead class="table-light">
+            <tr>
+                <th>Giờ</th>
+                <th>Thứ 2</th>
+                <th>Thứ 3</th>
+                <th>Thứ 4</th>
+                <th>Thứ 5</th>
+                <th>Thứ 6</th>
+                <th>Thứ 7</th>
+                <th>CN</th>
+            </tr>
+            </thead>
+            <tbody id="timetableBody"></tbody>
+        </table>
     </div>
 
-    <table class="table timetable mt-3">
-        <thead class="table-light">
-        <tr>
-            <th>Giờ</th>
-            <th>Thứ 2</th>
-            <th>Thứ 3</th>
-            <th>Thứ 4</th>
-            <th>Thứ 5</th>
-            <th>Thứ 6</th>
-            <th>Thứ 7</th>
-            <th>CN</th>
-        </tr>
-        </thead>
-        <tbody id="timetableBody"></tbody>
-    </table>
-</div>
+    <script>
+        const timetableData = {{ timetable_data|tojson }};
+        const week = {{ week }};
 
-<script>
-    const timetableData = {{ timetable_data|tojson }};
-    const week = {{ week }};
+        function renderTimetable(data) {
+            const tbody = document.getElementById("timetableBody");
+            tbody.innerHTML = "";
+            const startHour = 7, endHour = 18;
 
-    function renderTimetable(data) {
-        const tbody = document.getElementById("timetableBody");
-        tbody.innerHTML = "";
-        const startHour = 7, endHour = 18;
+            for (let hour = startHour; hour <= endHour; hour++) {
+                const row = document.createElement("tr");
+                const timeCell = document.createElement("td");
+                timeCell.textContent = `${hour}:00`;
+                row.appendChild(timeCell);
 
-        for (let hour = startHour; hour <= endHour; hour++) {
-            const row = document.createElement("tr");
-            const timeCell = document.createElement("td");
-            timeCell.textContent = `${hour}:00`;
-            row.appendChild(timeCell);
-
-            for (let day = 2; day <= 8; day++) {
-                const cell = document.createElement("td");
-                const classData = data.find(c => c.day === day && c.start === hour);
-                if (classData) {
-                    const duration = classData.end - classData.start;
-                    cell.rowSpan = duration;
-                    cell.innerHTML = `
-                        <div class="class-block">
-                            <div>${classData.name}</div>
-                            <div>${classData.room}</div>
-                            <div>${classData.teacher}</div>
-                        </div>`;
-                    row.appendChild(cell);
-                } else if (!data.some(c => c.day === day && c.start < hour && c.end > hour)) {
-                    row.appendChild(cell);
+                for (let day = 2; day <= 8; day++) {
+                    const cell = document.createElement("td");
+                    const classData = data.find(c => c.day === day && c.start === hour);
+                    if (classData) {
+                        const duration = classData.end - classData.start;
+                        cell.rowSpan = duration;
+                        cell.innerHTML = `
+                            <div class="class-block">
+                                <div>${classData.name}</div>
+                                <div>${classData.room}</div>
+                                <div>${classData.teacher}</div>
+                            </div>`;
+                        row.appendChild(cell);
+                    } else if (!data.some(c => c.day === day && c.start < hour && c.end > hour)) {
+                        row.appendChild(cell);
+                    }
                 }
+                tbody.appendChild(row);
             }
-            tbody.appendChild(row);
         }
-    }
 
-    renderTimetable(timetableData);
-</script>
+        renderTimetable(timetableData);
+    </script>
 </body>
 </html>
