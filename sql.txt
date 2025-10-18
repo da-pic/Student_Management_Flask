@@ -13,3 +13,10 @@ ADD column final_grade decimal(4, 2);
 ALTER TABLE proposed_scr
 ADD CONSTRAINT FOREIGN KEY lecturer_id REFERENCES Lecturer(lecturer_id);
 
+alter table course_class
+add column day TINYINT UNSIGNED,
+add column start_time TIME,
+add column end_time TIME,
+add column week_start INT UNSIGNED,
+add column week_end INT UNSIGNED,
+add column room VARCHAR(50);
