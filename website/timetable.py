@@ -15,26 +15,14 @@ def timetable_page(student_id):
     end_of_week = start_of_week + timedelta(days=6)
 
     cursor = conn.cursor(dictionary=True)
-    cursor.execute("""
-        SELECT 
-            c.course_name AS subject_name,
-            cc.class_day,
-            cc.start_time,
-            cc.end_time,
-            cc.class_room,
-            cc.week_start,
-            cc.week_end,
-            l.lecturer_name AS teacher
-        FROM Enrollment e
-        JOIN Course_Class cc ON e.course_class_id = cc.course_class_id
-        JOIN Course c ON cc.course_id = c.course_id
-        JOIN Lecturer l ON cc.lecturer_id = l.lecturer_id
-        WHERE e.student_id = %s
-          AND %s BETWEEN cc.week_start AND cc.week_end       
-        ORDER BY cc.class_day, cc.start_time
-    """, (student_id, week))
+     # Gọi stored procedure
+    cursor.callproc('get_timetable_by_week', [student_id, week])
 
-    rows = cursor.fetchall()
+    # Lấy dữ liệu trả về
+    rows = []
+    for result in cursor.stored_results():
+        rows = result.fetchall()
+
     cursor.close()
 
     timetable_data = [

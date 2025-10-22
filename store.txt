@@ -191,3 +191,115 @@ BEGIN
 END$$
 
 DELIMITER ;
+
+DELIMITER //
+CREATE PROCEDURE get_timetable_by_week(
+    IN p_student_id VARCHAR(20),
+    IN p_week INT
+)
+BEGIN
+    SELECT 
+        c.course_name AS subject_name,
+        cc.class_day,
+        cc.start_time,
+        cc.end_time,
+        cc.class_room,
+        cc.week_start,
+        cc.week_end,
+        l.lecturer_name AS teacher
+    FROM Enrollment e
+    JOIN Course_Class cc ON e.course_class_id = cc.course_class_id
+    JOIN Course c ON cc.course_id = c.course_id
+    JOIN Lecturer l ON cc.lecturer_id = l.lecturer_id
+    WHERE e.student_id = p_student_id
+      AND p_week BETWEEN cc.week_start AND cc.week_end
+    ORDER BY cc.class_day, cc.start_time;
+END //
+DELIMITER ;
+
+DELIMITER //
+CREATE PROCEDURE get_student_by_id(IN p_student_id VARCHAR(20))
+BEGIN
+    SELECT * FROM Student WHERE student_id = p_student_id;
+END //
+DELIMITER ;
+
+DELIMITER //
+CREATE PROCEDURE get_students_by_class(IN p_class VARCHAR(50))
+BEGIN
+    SELECT * 
+    FROM Student
+    WHERE administrative_class = p_class;
+END //
+DELIMITER ;
+
+DELIMITER //
+CREATE PROCEDURE get_student_scores(IN p_student_id VARCHAR(20))
+BEGIN
+    SELECT 
+        c.course_name,
+        c.course_id,
+        sc.attendance_scr,
+        sc.midterm_scr,
+        sc.finalterm_scr
+    FROM Score sc
+    JOIN Course_Class cc ON sc.course_class_id = cc.course_class_id
+    JOIN Course c ON c.course_id = cc.course_id
+    WHERE sc.student_id = p_student_id;
+END //
+DELIMITER ;
+
+DELIMITER //
+CREATE PROCEDURE get_student_course_classes(IN p_student_id VARCHAR(20))
+BEGIN
+    SELECT 
+        c.course_name, 
+        cc.course_class_id, 
+        l.lecturer_name, 
+        c.volume
+    FROM Enrollment enr
+    JOIN Course_Class cc ON enr.course_class_id = cc.course_class_id
+    JOIN Lecturer l ON l.lecturer_id = cc.lecturer_id
+    JOIN Course c ON c.course_id = cc.course_id
+    WHERE enr.student_id = p_student_id;
+END //
+DELIMITER ;
+
+DELIMITER //
+CREATE PROCEDURE get_course_class_detail(IN p_course_class_id VARCHAR(20))
+BEGIN
+    SELECT 
+        cc.course_class_id, 
+        c.volume, 
+        c.course_id, 
+        c.course_name, 
+        l.lecturer_id, 
+        l.lecturer_name, 
+        l.lecturer_contact, 
+        l.lecturer_email
+    FROM Course_Class cc
+    JOIN Course c ON cc.course_id = c.course_id
+    JOIN Lecturer l ON cc.lecturer_id = l.lecturer_id
+    WHERE cc.course_class_id = p_course_class_id;
+END //
+DELIMITER ;
+
+DELIMITER //
+CREATE PROCEDURE get_students_in_course_class(IN p_course_class_id VARCHAR(20))
+BEGIN
+    SELECT 
+        s.student_id, 
+        s.administrative_class, 
+        s.student_name, 
+        s.student_gender,
+        s.student_bd, 
+        s.student_address, 
+        s.student_contact, 
+        s.student_email, 
+        s.CPA
+    FROM Enrollment e
+    JOIN Student s ON e.student_id = s.student_id
+    WHERE e.course_class_id = p_course_class_id
+    ORDER BY s.student_name;
+END //
+DELIMITER ;

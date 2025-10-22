@@ -9,8 +9,11 @@ views = Blueprint('views', __name__)
 def home(student_id):
     cursor = conn.cursor(dictionary=True)
     # Lấy thông tin sinh viên
-    cursor.execute("SELECT * FROM Student WHERE student_id = %s", (student_id,))
-    student = cursor.fetchone()
+    cursor.callproc('get_student_by_id', [student_id])
+
+    student = None
+    for result in cursor.stored_results():
+        student = result.fetchone()
 
     if not student:
         cursor.close()
@@ -22,25 +25,18 @@ def home(student_id):
     # Nếu tab = lop-hanh-chinh => lấy danh sách lớp hành chính
     students = []
     if active_tab == "lop-hanh-chinh":
-        cursor.execute("SELECT * FROM Student WHERE administrative_class = %s", (student['administrative_class'],))
-        students = cursor.fetchall()
+        cursor.callproc('get_students_by_class', [student['administrative_class']])
+
+        for result in cursor.stored_results():
+            students = result.fetchall()
 
     # Nếu tab = hoc-tap => lấy kết quả học tập
     scores = []
     if active_tab == "hoc-tap":
-        cursor.execute("""
-            SELECT 
-                c.course_name,
-                c.course_id,
-                sc.attendance_scr,
-                sc.midterm_scr,
-                sc.finalterm_scr
-            FROM Score sc
-            JOIN Course_class cc ON sc.course_class_id = cc.course_class_id
-            JOIN Course c ON c.course_id = cc.course_id
-            WHERE sc.student_id = %s
-        """, (student_id,))
-        scores = cursor.fetchall()
+        cursor.callproc('get_student_scores', [student_id])
+
+        for result in cursor.stored_results():
+            scores = result.fetchall()
         for s in scores:
 
             for row in scores:
@@ -54,15 +50,10 @@ def home(student_id):
     # Lay thong tin cac lop tin chi cua sinh vien.
     course_class = []
     if active_tab == "lop-tin-chi":
-        cursor.execute("""
-            SELECT c.course_name, cc.course_class_id, L.lecturer_name, c.volume
-            FROM Enrollment enr
-            JOIN Course_Class cc ON enr.course_class_id = cc.course_class_id
-            JOIN Lecturer L ON L.lecturer_id = cc.lecturer_id
-            JOIN Course c ON c.course_id = cc.course_id
-            WHERE enr.student_id = %s 
-        """, (student_id,))
-        course_class = cursor.fetchall()
+        cursor.callproc('get_student_course_classes', [student_id])
+
+        for result in cursor.stored_results():
+            course_class = result.fetchall()
     cursor.close()
 
 
@@ -107,30 +98,22 @@ def class_details(course_class_id):
     cursor = conn.cursor(dictionary=True)
 
     # Thông tin lớp học + môn + giảng viên
-    cursor.execute("""
-        SELECT cc.course_class_id, c.volume, c.course_id, c.course_name, 
-               l.lecturer_id, l.lecturer_name, l.lecturer_contact, l.lecturer_email
-        FROM Course_Class cc
-        JOIN Course c ON cc.course_id = c.course_id
-        JOIN Lecturer l ON cc.lecturer_id = l.lecturer_id
-        WHERE cc.course_class_id = %s
-    """, (course_class_id,))
-    course_class = cursor.fetchone()
+    cursor.callproc('get_course_class_detail', [course_class_id])
+
+    course_class = []
+    for result in cursor.stored_results():
+        course_class = result.fetchone()
 
     if not course_class:
         cursor.close()
         return "Không tìm thấy lớp học", 404
 
     # Danh sách sinh viên trong lớp (nếu có)
-    cursor.execute("""
-        SELECT s.student_id, s.administrative_class, s.student_name, s.student_gender,
-               s.student_bd, s.student_address, s.student_contact, s.student_email, s.CPA
-        FROM Enrollment e
-        JOIN Student s ON e.student_id = s.student_id
-        WHERE e.course_class_id = %s
-        ORDER BY s.student_name
-    """, (course_class_id,))
-    students = cursor.fetchall()
+    cursor.callproc('get_students_in_course_class', [course_class_id])
+
+    students = []
+    for result in cursor.stored_results():
+        students = result.fetchall()
     student_count = len(students)
     cursor.close()
     return render_template('class_details.html', course_class=course_class, students=students, student_count=student_count)

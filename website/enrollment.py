@@ -49,25 +49,25 @@ def register_courses(student_id):
             course_id = new_course['course_id']
             course_name = new_course['course_name']
 
-            # 🔹 Kiểm tra xem sinh viên đã có lớp nào cùng course_id chưa
+            # Kiểm tra xem sinh viên đã có lớp nào cùng course_id chưa
             cursor.callproc('CheckDuplicateEnrollment', (student_id, course_id))
 
             # Lấy kết quả từ stored procedure
             old_enrollment = None
             for result in cursor.stored_results():
                 old_enrollment = result.fetchone()
-            # 🔹 Nếu đã có lớp cũ -> xóa lớp cũ trước
+            # Nếu đã có lớp cũ -> xóa lớp cũ trước
             if old_enrollment:
                 cursor.callproc('RemoveOldEnrollment', (student_id, old_enrollment['course_class_id']))
                 replaced += 1
 
-            # 🔹 Thêm lớp mới
+            # Thêm lớp mới
             cursor.callproc('AddNewEnrollment', (student_id, cc_id))
             added += 1
 
         conn.commit()
 
-        # 🔹 Hiển thị thông báo kết quả
+        # Hiển thị thông báo kết quả
         if added > 0:
             flash(f"✅ Đăng ký thành công {added} lớp học!", "success")
         if replaced > 0:
