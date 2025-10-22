@@ -23,7 +23,7 @@ def approve_proposal(proposal_id):
     proposal = cursor.fetchone()
     cursor.execute('''
         UPDATE Score
-        SET attendane_scr = %s, midterm_scr = %s, finalterm_scr = %s
+        SET attendance_scr = %s, midterm_scr = %s, finalterm_scr = %s
         WHERE student_id = %s AND course_class_id = %s''',
         (proposal['proposed_attendance_scr'], proposal['proposed_midterm_scr'], proposal['proposed_finalterm_scr'], 
         proposal['student_id'], proposal['course_class_id'])

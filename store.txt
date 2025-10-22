@@ -1,4 +1,3 @@
-___ADMIN___
 
 DELIMITER $$
 
@@ -25,7 +24,6 @@ BEGIN
 END$$
 DELIMITER ;
 
-___STUDENTS___
 
 DELIMITER $$
 
@@ -168,7 +166,7 @@ BEGIN
     VALUES (p_student_id, p_course_class_id);
 
     -- Thêm vào bảng score với điểm mặc định = 0
-    INSERT INTO score (student_id, course_class_id, attendane_scr, midterm_scr, finalterm_scr)
+    INSERT INTO score (student_id, course_class_id, attendance_scr, midterm_scr, finalterm_scr)
     VALUES (p_student_id, p_course_class_id, 0.0, 0.0, 0.0);
 END$$
 
@@ -191,23 +189,5 @@ BEGIN
     WHERE student_id = p_student_id
       AND course_class_id = p_course_class_id;
 END$$
-
-DELIMITER ;
-
-
-___LECTURER___
-
-DELIMITER $$
-
-CREATE PROCEDURE AuthenticateLecturer(
-    IN p_lecturer_email VARCHAR(100),
-    IN p_password VARCHAR(255)
-)
-BEGIN
-    SELECT lecturer_id, lecturer_name, lecturer_email
-    FROM lecturer
-    WHERE lecturer_email = p_lecturer_email
-      AND password = p_password;
-END $$
 
 DELIMITER ;

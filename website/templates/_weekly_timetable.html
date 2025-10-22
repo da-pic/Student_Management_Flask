@@ -1,0 +1,50 @@
+{# Weekly timetable partial - expects `classes` as list of dicts with keys:
+   course_class_id, course_name, day_of_week (2..8), start_time, end_time, room, semester, academic_year
+#}
+<div class="bg-white shadow rounded-xl p-6 mb-6">
+    <div class="flex items-center justify-between mb-3">
+        <h2 class="text-xl font-semibold">Thời khóa biểu tuần</h2>
+        <div class="text-sm text-gray-600">Tuần: {{ week_meta.start }} — {{ week_meta.end }}</div>
+    </div>
+
+    <div class="relative border rounded bg-white overflow-hidden">
+        {# Header row: days #}
+        <div class="grid grid-cols-8 text-white text-sm">
+            <div class="bg-blue-600 p-3 text-left font-semibold">Tiết / Thứ</div>
+            {% for label in ['Thứ 2','Thứ 3','Thứ 4','Thứ 5','Thứ 6','Thứ 7','CN'] %}
+                <div class="bg-blue-600 p-3 text-center font-semibold">{{ label }}</div>
+            {% endfor %}
+        </div>
+
+        {# Hourly rows container: 07:00 - 18:00 => 12 rows of 1 hour each #}
+        <div class="grid grid-cols-8 border-t" style="height:720px; position:relative;">
+            {# Time column #}
+            <div class="p-0 border-r text-sm text-gray-600 bg-white" style="overflow:hidden;">
+                <div style="height:100%; display:flex; flex-direction:column;">
+                    {% for h in range(7,19) %}
+                        <div style="height:calc(100%/12); padding:10px 12px; border-bottom:1px solid #f3f4f6;">{{ "%02d:00"|format(h) }}</div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            {% for d in range(2,9) %}
+                <div class="border-r relative bg-white" style="min-height:720px;">
+                    {# Subtle horizontal separators for visual alignment #}
+                    <div style="position:absolute; inset:0; pointer-events:none;">
+                        {% for i in range(12) %}
+                            <div style="height:calc(100%/12); border-bottom:1px solid rgba(0,0,0,0.04);"></div>
+                        {% endfor %}
+                    </div>
+
+                    {# Render blocks for this day #}
+                    {% for b in timetable_blocks if b.day == d %}
+                        <div class="absolute left-3 right-3 bg-blue-50 border-l-4 border-blue-400 rounded p-2 text-xs shadow" style="top: {{ b.top_pct }}%; height: {{ b.height_pct }}%; overflow:hidden;">
+                            <div class="font-semibold">{{ b.id }} — {{ b.title.split('—')[-1].strip() }}</div>
+                            <div class="text-gray-600">{{ b.time }} • {{ b.room }}</div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>

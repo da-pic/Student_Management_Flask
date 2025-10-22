@@ -63,7 +63,7 @@
 		-- Ràng buộc khóa ngoại giống bảng 2
 		FOREIGN KEY (lecturer_id)
 		REFERENCES Lecturer(lecturer_id)
-		ON DELETE SET NULL
+		ON DELETE CASCADE
 		ON UPDATE CASCADE,
 
 		CONSTRAINT fk_course_class_course
@@ -78,7 +78,7 @@
 		student_id VARCHAR(20),
 		course_class_id VARCHAR(20),
 		PRIMARY KEY (student_id, course_class_id),
-		FOREIGN KEY (student_id) REFERENCES Student(student_id),
+		FOREIGN KEY (student_id) REFERENCES Student(student_id) ON DELETE CASCADE, 
 		FOREIGN KEY (course_class_id) REFERENCES Course_Class(course_class_id)
 	);
 
@@ -86,7 +86,7 @@
 	CREATE TABLE Score (
 		student_id VARCHAR(20) NOT NULL,
 		course_class_id VARCHAR(20) NOT NULL,
-		attendane_scr DECIMAL(4,1),
+		attendance_scr DECIMAL(4,1),
 		midterm_scr DECIMAL(4,1),
 		finalterm_scr DECIMAL(4,1),
 		PRIMARY KEY (student_id, course_class_id),

@@ -14,10 +14,11 @@ def student_auth(username, password):
 
 
 def lecturer_auth(username, password):
-    cursor.callproc('AuthenticateLecturer', (username, password))
-    result = None
-    for r in cursor.stored_results():
-        result = r.fetchone()
+    cursor.execute('''
+        SELECT * FROM LECTURER
+        WHERE lecturer_id = %s AND password = %s
+        ''',(username, password))
+    result = cursor.fetchone()
     return result
 
 def admin_auth(username, password):

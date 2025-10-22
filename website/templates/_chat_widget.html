@@ -1,0 +1,44 @@
+<!-- Widget chat nổi (bao gồm vào các trang giảng viên) -->
+<div id="chatbotFab" style="position:fixed;right:22px;bottom:22px;z-index:60;">
+  <button id="chatbotToggle" title="Chat A.I" style="background:#2563eb;color:#fff;border-radius:9999px;padding:12px 14px;border:none;box-shadow:0 6px 18px rgba(37,99,235,.25);">🤖</button>
+</div>
+<div id="chatbotPopup" style="display:none;position:fixed;right:22px;bottom:80px;z-index:60;width:320px;background:#fff;border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,.12);overflow:hidden;border:1px solid #e6eefc;">
+  <div style="padding:10px 12px;border-bottom:1px solid #eef6ff;display:flex;justify-content:space-between;align-items:center;">
+    <strong style="color:#2563eb">Chatbot</strong>
+    <button id="chatbotClose" style="background:none;border:0;color:#667085;font-size:14px;">✖</button>
+  </div>
+  <div id="chatHistory" style="height:240px;overflow:auto;padding:10px;background:#fbfdff;"></div>
+  <div style="display:flex;padding:8px;border-top:1px solid #eef6ff;">
+    <input id="chatInput" placeholder="Gõ câu hỏi..." style="flex:1;border:1px solid #e6eefc;border-radius:8px;padding:8px 10px;">
+    <button id="chatSend" style="margin-left:8px;background:#2563eb;color:#fff;border-radius:8px;padding:8px 10px;border:none;">Gửi</button>
+  </div>
+</div>
+
+<script>
+(function(){
+  const toggle = document.getElementById('chatbotToggle');
+  const popup = document.getElementById('chatbotPopup');
+  const closeBtn = document.getElementById('chatbotClose');
+  const sendBtn = document.getElementById('chatSend');
+  const input = document.getElementById('chatInput');
+  const history = document.getElementById('chatHistory');
+  function append(role, text){
+    const d = document.createElement('div');
+    d.style.marginBottom='8px'; d.style.padding='8px'; d.style.borderRadius='8px'; d.style.maxWidth='85%';
+    if(role==='user'){ d.style.background='#e6f2ff'; d.style.marginLeft='auto'; }
+    else { d.style.background='#f3f4f6'; }
+    d.textContent = text; history.appendChild(d); history.scrollTop = history.scrollHeight;
+  }
+  toggle.addEventListener('click', ()=>{ popup.style.display = (popup.style.display==='none' ? 'block' : 'none'); input.focus(); });
+  closeBtn.addEventListener('click', ()=> popup.style.display='none');
+  sendBtn.addEventListener('click', async ()=>{
+    const t = input.value.trim(); if(!t) return; append('user', t); input.value=''; append('bot','Đang trả lời...');
+    const placeholder = history.lastChild;
+    try{
+      const res = await fetch('/chat/api',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:t})});
+      const j = await res.json(); placeholder.textContent = j.reply || 'Không có trả lời';
+    }catch(e){ placeholder.textContent = 'Lỗi server'; }
+  });
+  input.addEventListener('keypress', (e)=>{ if(e.key==='Enter'){ sendBtn.click(); e.preventDefault(); } });
+})();
+</script>

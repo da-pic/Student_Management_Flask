@@ -17,7 +17,7 @@ BEGIN
             lecturer_id,
             _status
         )
-        VALUES ( NEW.attendane_scr,
+        VALUES ( NEW.attendance_scr,
             NEW.midterm_scr,
             NEW.finalterm_scr,
             OLD.student_id,
@@ -25,7 +25,7 @@ BEGIN
             @lecturer_id, -- SET lecturer_id qua session backend.
             'Pending'
         );
-        SET NEW.attendane_scr = OLD.attendane_scr;
+        SET NEW.attendance_scr = OLD.attendance_scr;
         SET NEW.midterm_scr = OLD.midterm_scr;
         SET NEW.finalterm_scr = OLD.finalterm_scr;
     END IF;

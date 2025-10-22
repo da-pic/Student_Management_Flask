@@ -1,0 +1,327 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <title>Giảng viên - {{ lecturer.lecturer_name if lecturer else '' }}</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss/dist/tailwind.min.css">
+  <style>body{min-height:100vh}</style>
+</head>
+<body class="flex bg-blue-50">
+  <!-- Sidebar -->
+  <aside class="w-64 bg-white shadow-md p-6 flex flex-col justify-between rounded-r-3xl">
+    <div>
+  <h2 class="text-2xl font-bold text-blue-700 mb-6"><a href="{{ url_for('lecturer_views.lecturer_home', lecturer_id=lecturer.lecturer_id) if lecturer else '#' }}" class="text-blue-700 hover:underline">QLGV</a></h2>
+      <nav class="space-y-3">
+  <a href="{{ url_for('lecturer_views.lecturer_home', lecturer_id=lecturer.lecturer_id) }}?tab=home" class="block text-gray-700 hover:text-blue-600 font-medium">👤 Hồ sơ</a>
+  <a href="{{ url_for('lecturer_views.lecturer_home', lecturer_id=lecturer.lecturer_id) }}?tab=courses" class="block text-gray-700 hover:text-blue-600 font-medium">📚 Môn phụ trách</a>
+  <a href="{{ url_for('lecturer_views.lecturer_home', lecturer_id=lecturer.lecturer_id) }}?tab=input" class="block text-gray-700 hover:text-blue-600 font-medium">📝 Nhập điểm</a>
+  <a href="{{ url_for('lecturer_views.lecturer_home', lecturer_id=lecturer.lecturer_id) }}?tab=timetable" class="block text-gray-700 hover:text-blue-600 font-medium">🗓 Thời khóa biểu</a>
+        <a href="{{ url_for('auth.logout') }}" class="block text-red-500 hover:text-red-600 font-medium">⎋ Đăng xuất</a>
+      </nav>
+    </div>
+  {# Đăng xuất giờ đã là mục trong thanh điều hướng phía trên; đã loại bỏ nút đăng xuất ở phía dưới #}
+  </aside>
+
+  <main class="flex-1 p-8">
+    {# Title area - may be overridden by tabs via passed variables #}
+    <header class="mb-6">
+      <div class="flex items-center justify-between">
+        <div>
+          <h1 class="text-2xl font-bold text-blue-700">{{ page_title or ('Giảng viên: ' + (lecturer.lecturer_name if lecturer else '')) }}</h1>
+          {% if page_sub %}<div class="text-sm text-gray-600">{{ page_sub }}</div>{% endif %}
+        </div>
+        <div></div>
+      </div>
+    </header>
+
+    <section>
+      {# Dispatch tabs: inline fragments so we have a single template for all lecturer views #}
+      {% if active_tab == 'home' %}
+  {# --- teacher_dashboard.html: đã gộp vào đây --- #}
+        <main class="flex-1 p-10 relative">
+                <h1 class="text-3xl font-bold text-gray-700 mb-4">
+                    👨‍🏫 Bảng điều khiển Giảng viên
+                    {% if lecturer %}<span class="text-gray-500">— {{ lecturer.lecturer_name or lecturer.lecturer_id }}</span>{% endif %}
+                </h1>
+                <hr class="border-gray-300 mb-6">
+
+                <!-- Hồ sơ (separate profile card + class list) -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                    <!-- Profile card -->
+                    <div class="col-span-1 bg-white shadow rounded-xl p-6">
+                        <div class="flex items-center space-x-4">
+                            
+                            <div class="flex-1">
+                                <p class="text-gray-700"><strong>Họ & tên:</strong> {{ lecturer.lecturer_name or '' }}</p>
+                                <p class="text-gray-700"><strong>Mã GV:</strong> {{ lecturer.lecturer_id or '' }}</p>
+                                <p class="text-gray-700"><strong>Khoa:</strong> {{ lecturer.lecturer_faculty or '' }}</p>
+                            </div>
+                        </div>
+                        <div class="mt-4">
+                            <p class="text-gray-700"><strong>Liên hệ:</strong> {{ lecturer.lecturer_contact or '' }}</p>
+                            <p class="text-gray-700"><strong>Email:</strong> {% if lecturer.lecturer_email %}<a class="text-blue-600" href="mailto:{{ lecturer.lecturer_email }}">{{ lecturer.lecturer_email }}</a>{% else %} {% endif %}</p>
+                        </div>
+                    </div>
+
+                    <!-- Class list card (spans two columns on md+) -->
+                    <div class="col-span-2 bg-white shadow rounded-xl p-6">
+                        <h3 class="text-lg font-semibold mb-2">Lớp phụ trách</h3>
+                        <ul class="list-disc pl-6 text-gray-700">
+                            {% if classes and classes|length > 0 %}
+                                {% for cls in classes %}
+                                    <li>{{ cls.course_class_id }} — {{ cls.course_name }}</li>
+                                {% endfor %}
+                            {% else %}
+                                <li>Chưa có lớp nào.</li>
+                            {% endif %}
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                    <div class="col-span-1 md:col-span-2">
+                        <div class="bg-white shadow rounded-xl p-8 mb-6" style="min-height:360px;">
+                            <h2 class="text-xl font-semibold">Môn phụ trách</h2>
+                            <ul class="list-disc pl-6 text-gray-700 mt-3">
+                                {% if courses and courses|length > 0 %}
+                                    {% for c in courses %}
+                                        <li>{{ c.course_name }}</li>
+                                    {% endfor %}
+                                {% else %}
+                                    <li>Chưa có môn nào.</li>
+                                {% endif %}
+                            </ul>
+                        </div>
+
+                        <div id="timetable-panel" class="hidden"></div>
+                    </div>
+
+          <div class="col-span-1">
+            {# cột phải trống để cân bằng bố cục; giữ trống có chủ ý #}
+          </div>
+                </div>
+  {# --- kết thúc teacher_dashboard --- #}
+
+      {% elif active_tab == 'courses' %}
+  {# --- lecturer_courses.html: đã gộp vào đây --- #}
+        <main class="flex-1 p-10">
+            <h2 class="text-3xl font-bold text-blue-700 mb-6">Các môn phụ trách của {{ lecturer.lecturer_name }}</h2>
+
+            {% if courses_dict %}
+                {% for course_name, class_list in courses_dict.items() %}
+                    <div class="bg-white shadow-md rounded-2xl p-6 mb-6">
+                        <h3 class="text-xl font-semibold text-blue-600 mb-3">{{ course_name }}</h3>
+                        <ul class="list-disc ml-6 text-gray-700">
+                            {% for class_id in class_list %}
+                                <li>
+                                    <a href="/lecturer/class/{{ class_id }}" class="text-blue-500 hover:underline">Lớp {{ class_id }}</a>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <p class="text-gray-600 italic">Chưa có môn học nào được phân công.</p>
+            {% endif %}
+        </main>
+
+      {% elif active_tab == 'input' %}
+  {# --- lecturer_input_list.html: đã gộp vào đây --- #}
+        <main class="flex-1 p-10">
+          <h1 class="text-3xl font-bold text-blue-700 mb-6">Chọn lớp để nhập điểm cho {{ lecturer.lecturer_name }}</h1>
+
+          <div class="bg-white shadow rounded-2xl p-6">
+          {% if input_classes %}
+            <ul class="space-y-3">
+              {% for cl in input_classes %}
+                <li class="bg-white p-4 rounded shadow flex justify-between items-center">
+                  <div>
+                    <div class="text-lg font-semibold">Lớp {{ cl.course_class_id }}</div>
+                    <div class="text-sm text-gray-600">Môn: {{ cl.course_name }}</div>
+                  </div>
+                  <div>
+                    <a href="/lecturer/input/{{ lecturer.lecturer_id }}/{{ cl.course_class_id }}" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Nhập điểm</a>
+                  </div>
+                </li>
+              {% endfor %}
+            </ul>
+          {% else %}
+            <p>Không có lớp để nhập điểm.</p>
+          {% endif %}
+          </div>
+
+        </main>
+
+      {% elif active_tab == 'input_scores' %}
+  <main class="flex-1 p-10">
+      <h1 class="text-3xl font-bold text-blue-700 mb-6">Nhập điểm cho lớp {{ class_info.course_class_id }} - {{ class_info.course_name }}</h1>
+
+      {% with messages = get_flashed_messages() %}
+    {% if messages %}
+        <div class="mb-4">
+      {% for m in messages %}
+          <div class="bg-green-100 border border-green-200 text-green-800 p-3 rounded mb-2">Đề xuất điểm thành công!</div>
+      {% endfor %}
+        </div>
+    {% endif %}
+      {% endwith %}
+
+      <div class="bg-white shadow rounded-2xl p-6 overflow-x-auto">
+      <form method="post" action="">
+        <table class="w-full border-collapse">
+          <thead class="bg-blue-200 text-gray-800">
+          <tr>
+            <th class="py-2 px-3 text-left">STT</th>
+            <th class="py-2 px-3 text-left">Mã SV</th>
+            <th class="py-2 px-3 text-left">Họ và tên</th>
+            <th class="py-2 px-3 text-center">Điểm chuyên cần</th>
+            <th class="py-2 px-3 text-center">Điểm giữa kỳ</th>
+            <th class="py-2 px-3 text-center">Điểm cuối kỳ</th>
+          </tr>
+          </thead>
+          <tbody>
+          {% for s in students %}
+            <tr class="border-b hover:bg-blue-50">
+              <td class="py-2 px-3">{{ loop.index }}</td>
+              <td class="py-2 px-3">{{ s.student_id }}<input type="hidden" name="student_id_{{ loop.index0 }}" value="{{ s.student_id }}"></td>
+              <td class="py-2 px-3">{{ s.student_name }}</td>
+              <td class="py-2 px-3 text-center"><input step="0.1" min="0" max="100" name="attendance_scr_{{ loop.index0 }}" value="{{ s.attendance_scr | default('') }}" class="border rounded px-2 py-1 w-28 text-center"></td>
+              <td class="py-2 px-3 text-center"><input step="0.1" min="0" max="100" name="midterm_scr_{{ loop.index0 }}" value="{{ s.midterm_scr | default('') }}" class="border rounded px-2 py-1 w-28 text-center"></td>
+              <td class="py-2 px-3 text-center"><input step="0.1" min="0" max="100" name="finalterm_scr_{{ loop.index0 }}" value="{{ s.finalterm_scr | default('') }}" class="border rounded px-2 py-1 w-28 text-center"></td>
+            </tr>
+          {% endfor %}
+          </tbody>
+        </table>
+
+        <div class="mt-4 flex items-center space-x-2">
+          <input type="hidden" name="count" value="{{ students|length }}">
+          <button type="submit" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">Đề xuất</button>
+          <a href="/lecturer/input/{{ lecturer.lecturer_id }}" class="ml-2 bg-gray-200 px-3 py-2 rounded">Quay lại</a>
+        </div>
+      </form>
+      </div>
+  </main>
+
+      {% elif active_tab == 'class_detail' %}
+  {# --- lecturer_class_detail.html: đã gộp vào đây --- #}
+        <main class="flex-1 p-10">
+          <h1 class="text-3xl font-bold text-blue-700 mb-6">
+            Danh sách sinh viên – {{ class_info.course_class_id }} ({{ class_info.course_name }})
+          </h1>
+
+          <div class="bg-white shadow rounded-2xl p-6 overflow-x-auto">
+            <table class="w-full border-collapse">
+              <thead class="bg-blue-200 text-gray-800">
+                <tr>
+                  <th class="py-2 px-3 text-left">STT</th>
+                  <th class="py-2 px-3 text-left">Họ và tên đệm</th>
+                  <th class="py-2 px-3 text-left">Tên</th>
+                  <th class="py-2 px-3 text-left">Mã SV</th>
+                  <th class="py-2 px-3 text-left">Lớp hành chính</th>
+                  <th class="py-2 px-3 text-left">Ngày sinh</th>
+                  <th class="py-2 px-3 text-left">Quê quán</th>
+                  <th class="py-2 px-3 text-left">Email</th>
+                </tr>
+              </thead>
+
+              <tbody>
+                {% for s in students %}
+                {% set parts = (s.student_name or '').split() %}
+                {% set hodem = ' '.join(parts[:-1]) if parts|length > 1 else '' %}
+                {% set ten = parts[-1] if parts else '' %}
+                <tr class="border-b hover:bg-blue-50">
+                  <td class="py-2 px-3">{{ loop.index }}</td>
+                  <td class="py-2 px-3">{{ hodem }}</td>
+                  <td class="py-2 px-3 font-semibold">{{ ten }}</td>
+                  <td class="py-2 px-3">{{ s.student_id }}</td>
+                  <td class="py-2 px-3">{{ s.administrative_class }}</td>
+                  <td class="py-2 px-3">{{ s.dob.strftime('%d/%m/%Y') if s.dob }}</td>
+                  <td class="py-2 px-3">{{ s.student_address }}</td>
+                  <td class="py-2 px-3 text-blue-600">{{ s.student_email }}</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+
+            {% if students|length == 0 %}
+            <p class="mt-4 text-gray-500 text-center">Chưa có sinh viên nào trong lớp này.</p>
+            {% endif %}
+          </div>
+        </main>
+
+      {% elif active_tab == 'edit' %}
+  {# --- lecturer_edit.html: đã gộp (trang form) --- #}
+        <main class="flex-1 p-10 flex flex-col items-center">
+          <h1 class="text-3xl font-bold mb-6 text-center">Chỉnh sửa hồ sơ</h1>
+
+          <div class="bg-white shadow rounded-xl p-6 max-w-2xl w-full">
+            <form method="post" action="" enctype="multipart/form-data">
+              <div class="mb-4">
+                <label class="form-label block mb-1">Họ & tên</label>
+                <input name="lecturer_name" class="w-full border rounded px-3 py-2" value="{{ lecturer.lecturer_name or '' }}">
+              </div>
+              <div class="mb-4">
+                <label class="form-label block mb-1">Liên hệ</label>
+                <input name="lecturer_contact" class="w-full border rounded px-3 py-2" value="{{ lecturer.lecturer_contact or '' }}">
+              </div>
+              <div class="mb-4">
+                <label class="form-label block mb-1">Email</label>
+                <input name="lecturer_email" class="w-full border rounded px-3 py-2" value="{{ lecturer.lecturer_email or '' }}">
+              </div>
+              <div class="mb-4">
+                <label class="form-label block mb-1">Khoa</label>
+                <input name="lecturer_faculty" class="w-full border rounded px-3 py-2" value="{{ lecturer.lecturer_faculty or '' }}">
+              </div>
+              
+
+              <div class="flex space-x-2">
+                <button type="submit" class="bg-green-600 text-white px-4 py-2 rounded">Lưu</button>
+                <a href="{{ url_for('lecturer_views.lecturer_home', lecturer_id=lecturer.lecturer_id) }}" class="bg-gray-200 px-4 py-2 rounded">Hủy</a>
+              </div>
+            </form>
+          </div>
+        </main>
+
+      {% elif active_tab == 'timetable' %}
+  {# --- lecturer_timetable.html: đã gộp vào đây --- #}
+        <div class="container">
+          <div class="bg-white shadow rounded-xl p-6 mb-6 flex items-center justify-between">
+            <div>
+              <h1 class="text-2xl font-bold">Thời khóa biểu — {{ lecturer.lecturer_name }}</h1>
+              <p class="text-gray-600">Mã GV: {{ lecturer.lecturer_id }} • Khoa: {{ lecturer.lecturer_faculty }}</p>
+              <p class="text-sm text-gray-500 mt-1">Tuần: {{ week_meta.start }} — {{ week_meta.end }}</p>
+            </div>
+            <div class="flex items-center space-x-3">
+              <a href="{{ url_for('lecturer_views.lecturer_home', lecturer_id=lecturer.lecturer_id) }}?tab=home" class="px-3 py-2 bg-white border rounded text-sm text-blue-600 hover:bg-blue-50">Quay lại</a>
+
+              <form id="week-form" method="get" action="{{ url_for('lecturer_views.lecturer_home', lecturer_id=lecturer.lecturer_id) }}">
+                <input type="hidden" name="tab" value="timetable">
+                <select name="week" onchange="document.getElementById('week-form').submit()" class="px-3 py-2 border rounded text-sm">
+                  {% for opt in week_options %}
+                    <option value="{{ opt.iso }}" {% if opt.selected %}selected{% endif %}>{{ opt.label }}</option>
+                  {% endfor %}
+                </select>
+              </form>
+
+              <a href="{{ url_for('lecturer_views.lecturer_home', lecturer_id=lecturer.lecturer_id) }}?tab=timetable&week={{ week_meta.prev }}" class="px-3 py-2 bg-blue-600 text-white rounded text-sm">&larr; Tuần trước</a>
+              <a href="{{ url_for('lecturer_views.lecturer_home', lecturer_id=lecturer.lecturer_id) }}?tab=timetable&week={{ week_meta.next }}" class="px-3 py-2 bg-blue-600 text-white rounded text-sm">Tuần sau &rarr;</a>
+            </div>
+          </div>
+
+          {# Render the weekly timetable partial (use shared partial so layout changes apply) #}
+          {% include '_weekly_timetable.html' %}
+        </div>
+
+      {% else %}
+        <div class="bg-white p-6 rounded shadow">Chưa chọn nội dung hiển thị.</div>
+      {% endif %}
+    </section>
+  </main>
+
+  {% include '_chat_widget.html' %}
+
+  
+
+  
+</body>
+</html>

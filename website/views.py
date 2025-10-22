@@ -32,7 +32,7 @@ def home(student_id):
             SELECT 
                 c.course_name,
                 c.course_id,
-                sc.attendane_scr,
+                sc.attendance_scr,
                 sc.midterm_scr,
                 sc.finalterm_scr
             FROM Score sc
@@ -42,13 +42,13 @@ def home(student_id):
         """, (student_id,))
         scores = cursor.fetchall()
         for s in scores:
-            attend = s['attendane_scr']
+            attend = s['attendance_scr']
             mid = s['midterm_scr']
             final = s['finalterm_scr']
 
             for row in scores:
                 row['final_grade'] = (
-                (row['attendane_scr'] or 0) * 0.1 +
+                (row['attendance_scr'] or 0) * 0.1 +
                 (row['midterm_scr'] or 0) * 0.2 +
                 (row['finalterm_scr'] or 0) * 0.7
             )
