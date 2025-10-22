@@ -59,7 +59,7 @@
                         </div>
                         <div class="mt-4">
                             <p class="text-gray-700"><strong>Liên hệ:</strong> {{ lecturer.lecturer_contact or '' }}</p>
-                            <p class="text-gray-700"><strong>Email:</strong> {% if lecturer.lecturer_email %}<a class="text-blue-600" href="mailto:{{ lecturer.lecturer_email }}">{{ lecturer.lecturer_email }}</a>{% else %} {% endif %}</p>
+                            <p class="text-gray-700"><strong>Email:</strong> {{ lecturer.lecturer_email or '' }}</p>
                         </div>
                     </div>
 
@@ -69,7 +69,11 @@
                         <ul class="list-disc pl-6 text-gray-700">
                             {% if classes and classes|length > 0 %}
                                 {% for cls in classes %}
-                                    <li>{{ cls.course_class_id }} — {{ cls.course_name }}</li>
+                                    <li>
+                                        <a href="/lecturer/class/{{ cls.course_class_id }}" class="text-blue-600 hover:underline">
+                                            {{ cls.course_class_id }} — {{ cls.course_name }}
+                                        </a>
+                                    </li>
                                 {% endfor %}
                             {% else %}
                                 <li>Chưa có lớp nào.</li>
@@ -85,7 +89,11 @@
                             <ul class="list-disc pl-6 text-gray-700 mt-3">
                                 {% if courses and courses|length > 0 %}
                                     {% for c in courses %}
-                                        <li>{{ c.course_name }}</li>
+                                        <li>
+                                            <a href="/lecturer/home/{{ lecturer.lecturer_id }}?tab=courses" class="text-blue-600 hover:underline">
+                                                {{ c.course_name }}
+                                            </a>
+                                        </li>
                                     {% endfor %}
                                 {% else %}
                                     <li>Chưa có môn nào.</li>
@@ -196,7 +204,7 @@
         <div class="mt-4 flex items-center space-x-2">
           <input type="hidden" name="count" value="{{ students|length }}">
           <button type="submit" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">Đề xuất</button>
-          <a href="/lecturer/input/{{ lecturer.lecturer_id }}" class="ml-2 bg-gray-200 px-3 py-2 rounded">Quay lại</a>
+          <a href="/lecturer/home/{{ lecturer.lecturer_id }}?tab=input" class="ml-2 bg-gray-200 px-3 py-2 rounded">Quay lại</a>
         </div>
       </form>
       </div>
@@ -235,7 +243,7 @@
                   <td class="py-2 px-3 font-semibold">{{ ten }}</td>
                   <td class="py-2 px-3">{{ s.student_id }}</td>
                   <td class="py-2 px-3">{{ s.administrative_class }}</td>
-                  <td class="py-2 px-3">{{ s.dob.strftime('%d/%m/%Y') if s.dob }}</td>
+                  <td class="py-2 px-3">{{ s.dob.strftime('%d/%m/%Y') if s.dob else '' }}</td>
                   <td class="py-2 px-3">{{ s.student_address }}</td>
                   <td class="py-2 px-3 text-blue-600">{{ s.student_email }}</td>
                 </tr>
@@ -320,8 +328,5 @@
 
   {% include '_chat_widget.html' %}
 
-  
-
-  
 </body>
 </html>
