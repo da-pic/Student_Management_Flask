@@ -42,15 +42,12 @@ def home(student_id):
         """, (student_id,))
         scores = cursor.fetchall()
         for s in scores:
-            attend = s['attendance_scr']
-            mid = s['midterm_scr']
-            final = s['finalterm_scr']
 
             for row in scores:
                 row['final_grade'] = (
-                (row['attendance_scr'] or 0) * 0.1 +
-                (row['midterm_scr'] or 0) * 0.2 +
-                (row['finalterm_scr'] or 0) * 0.7
+                float(row['attendance_scr']) * 0.1 +
+                float(row['midterm_scr']) * 0.2 +
+                float(row['finalterm_scr']) * 0.7
             )
         conn.commit()
 
