@@ -1,0 +1,213 @@
+___ADMIN___
+
+DELIMITER $$
+
+CREATE PROCEDURE GetAdministrativeClassList()
+BEGIN
+    SELECT 
+        administrative_class, 
+        COUNT(student_id) AS student_count
+    FROM Student
+    GROUP BY administrative_class;
+END $$
+
+DELIMITER ;
+
+DELIMITER $$
+CREATE PROCEDURE AuthenticateAdmin(
+    IN p_admin_id VARCHAR(50),
+    IN p_password VARCHAR(255)
+)
+BEGIN
+    SELECT admin_id, password
+    FROM admin
+    WHERE admin_id = p_admin_id AND password = p_password;
+END$$
+DELIMITER ;
+
+___STUDENTS___
+
+DELIMITER $$
+
+CREATE PROCEDURE AuthenticateStudent(
+    IN p_student_id VARCHAR(20),
+    IN p_password VARCHAR(255)
+)
+BEGIN
+    SELECT student_id, student_email
+    FROM student
+    WHERE student_id = p_student_id AND password = p_password;
+END $$
+
+DELIMITER ;
+
+DELIMITER $$
+
+CREATE PROCEDURE get_student_password(
+    IN p_student_id VARCHAR(50)
+)
+BEGIN
+    SELECT password 
+    FROM student 
+    WHERE student_id = p_student_id;
+END $$
+
+DELIMITER ;
+
+DELIMITER $$
+CREATE PROCEDURE ChangeStudentPassword(
+    IN p_student_id VARCHAR(50),
+    IN p_new_password VARCHAR(255)
+)
+BEGIN
+    UPDATE student
+    SET password = p_new_password
+    WHERE student_id = p_student_id;
+END$$
+DELIMITER ;
+
+DELIMITER $$
+
+CREATE PROCEDURE GetAllCourseClasses()
+BEGIN
+    SELECT
+        c.course_id,
+        c.course_name,
+        c.volume,
+        cc.course_class_id,
+        l.lecturer_name
+    FROM course_class cc
+    JOIN course c ON cc.course_id = c.course_id
+    JOIN lecturer l ON cc.lecturer_id = l.lecturer_id;
+END$$
+
+DELIMITER ;
+
+DELIMITER $$
+
+CREATE PROCEDURE GetRegisteredCourses(
+    IN p_student_id VARCHAR(50)
+)
+BEGIN
+    SELECT
+        c.course_id,
+        c.course_name,
+        c.volume,
+        cc.course_class_id,
+        l.lecturer_name
+    FROM enrollment e
+    JOIN course_class cc ON e.course_class_id = cc.course_class_id
+    JOIN course c ON cc.course_id = c.course_id
+    JOIN lecturer l ON cc.lecturer_id = l.lecturer_id
+    WHERE e.student_id = p_student_id;
+END$$
+
+DELIMITER ;
+
+
+DELIMITER $$
+
+CREATE PROCEDURE GetCourseInfoByClassId(
+    IN p_course_class_id VARCHAR(20)
+)
+BEGIN
+    SELECT cc.course_id, c.course_name
+    FROM course_class cc
+    JOIN course c ON cc.course_id = c.course_id
+    WHERE cc.course_class_id = p_course_class_id;
+END$$
+
+DELIMITER ;
+
+
+DELIMITER $$
+
+CREATE PROCEDURE CheckDuplicateEnrollment(
+    IN p_student_id VARCHAR(50),
+    IN p_course_id VARCHAR(50)
+)
+BEGIN
+    SELECT e.course_class_id
+    FROM enrollment e
+    JOIN course_class cc ON e.course_class_id = cc.course_class_id
+    WHERE e.student_id = p_student_id
+      AND cc.course_id = p_course_id;
+END$$
+
+DELIMITER ;
+
+DELIMITER $$
+
+CREATE PROCEDURE RemoveOldEnrollment(
+    IN p_student_id VARCHAR(50),
+    IN p_course_class_id VARCHAR(50)
+)
+BEGIN
+    -- Xóa lớp đã đăng ký trong bảng enrollment
+    DELETE FROM enrollment
+    WHERE student_id = p_student_id
+      AND course_class_id = p_course_class_id;
+
+    -- Xóa điểm tương ứng trong bảng score
+    DELETE FROM score
+    WHERE student_id = p_student_id
+      AND course_class_id = p_course_class_id;
+END$$
+
+DELIMITER ;
+
+DELIMITER $$
+
+CREATE PROCEDURE AddNewEnrollment(
+    IN p_student_id VARCHAR(50),
+    IN p_course_class_id VARCHAR(50)
+)
+BEGIN
+    -- Thêm vào bảng enrollment
+    INSERT INTO enrollment (student_id, course_class_id)
+    VALUES (p_student_id, p_course_class_id);
+
+    -- Thêm vào bảng score với điểm mặc định = 0
+    INSERT INTO score (student_id, course_class_id, attendane_scr, midterm_scr, finalterm_scr)
+    VALUES (p_student_id, p_course_class_id, 0.0, 0.0, 0.0);
+END$$
+
+DELIMITER ;
+
+DELIMITER $$
+
+CREATE PROCEDURE CancelEnrollment(
+    IN p_student_id VARCHAR(50),
+    IN p_course_class_id VARCHAR(50)
+)
+BEGIN
+    -- Xóa bản ghi trong bảng enrollment
+    DELETE FROM enrollment
+    WHERE student_id = p_student_id
+      AND course_class_id = p_course_class_id;
+
+    -- Xóa bản ghi trong bảng score
+    DELETE FROM score
+    WHERE student_id = p_student_id
+      AND course_class_id = p_course_class_id;
+END$$
+
+DELIMITER ;
+
+
+___LECTURER___
+
+DELIMITER $$
+
+CREATE PROCEDURE AuthenticateLecturer(
+    IN p_lecturer_email VARCHAR(100),
+    IN p_password VARCHAR(255)
+)
+BEGIN
+    SELECT lecturer_id, lecturer_name, lecturer_email
+    FROM lecturer
+    WHERE lecturer_email = p_lecturer_email
+      AND password = p_password;
+END $$
+
+DELIMITER ;

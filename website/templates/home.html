@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Dashboard Sinh viên</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss/dist/tailwind.min.css">
+  <script src="https://unpkg.com/feather-icons"></script>
+</head>
+<body class="bg-gradient-to-r from-blue-200 to-blue-50 min-h-screen flex relative">
+
+  <!-- Sidebar -->
+  <aside class="w-64 bg-white shadow-lg rounded-r-3xl p-5 flex flex-col justify-between">
+    <div>
+      <h1 class="text-2xl font-bold text-blue-600 mb-6">QLSV</h1>
+      <nav id="sidebar" class="space-y-3">
+        <a href="/home/{{ student.student_id }}?tab=hoso" 
+           class="w-full block p-3 rounded-xl {{ 'bg-blue-200' if active_tab=='hoso' else '' }}">
+           👤 Hồ sơ
+        </a>
+        <a href="/home/{{ student.student_id }}?tab=lop-hanh-chinh" 
+           class="w-full block p-3 rounded-xl {{ 'bg-blue-200' if active_tab=='lop-hanh-chinh' else '' }}">
+           🏫 Lớp hành chính
+        </a>
+        <a href="/home/{{ student.student_id }}?tab=lop-tin-chi" 
+           class="w-full block p-3 rounded-xl {{ 'bg-blue-200' if active_tab=='lop-tin-chi' else '' }}">
+           📘 Lớp tín chỉ
+        </a>
+        <a href="/home/{{ student.student_id }}?tab=hoc-tap" 
+           class="w-full block p-3 rounded-xl {{ 'bg-blue-200' if active_tab=='hoc-tap' else '' }}">
+           📝 Kết quả học tập
+        </a>
+
+        <!-- Nút Tính năng -->
+        <div class="mt-8 bg-white shadow rounded-xl">
+          <button id="toggleFeatures" class="w-full flex items-center justify-between p-4 text-left font-semibold text-blue-600">
+            🔧 Tính năng
+            <i id="arrow" data-feather="chevron-down" class="transition-transform"></i>
+          </button>
+          <div id="featuresList" class="hidden border-t p-4 space-y-2">
+            <a href="{{ url_for('enrollment.enrollment_page', student_id=student.student_id) }}" 
+            class="block p-3 bg-blue-100 rounded-lg hover:bg-blue-200">
+            📌 Đăng ký tín chỉ
+            </a>
+            <a href="{{ url_for('timetable.timetable_page', student_id=student.student_id) }}" 
+            class="block p-3 bg-blue-100 rounded-lg hover:bg-blue-200">
+            📌 Thời khoá biểu
+            </a>
+            <a href="{{ url_for('auth.change_password',) }}" 
+            class="block p-3 bg-blue-100 rounded-lg hover:bg-blue-200">
+            📌 Đổi mật khẩu
+            </a>
+            <a href="{{ url_for('auth.logout',) }}" 
+            class="block p-3 bg-blue-100 rounded-lg hover:bg-blue-200">
+            📌 Đăng xuất
+            </a>
+          </div>
+        </div>
+      </nav>
+    </div>
+  </aside>
+
+  <!-- Main content -->
+  <main class="flex-1 p-10 relative">
+    {% if active_tab == 'hoso' %}
+      <h1 class="text-3xl font-bold text-blue-600 mb-4">👤 Hồ sơ</h1>
+      <hr class="border-gray-300 mb-6">
+      <!-- Hồ sơ sinh viên -->
+      <div class="bg-white shadow rounded-xl p-6 mb-8">
+        <table class="w-full text-left border-collapse">
+          <tr><th class="p-2 text-gray-600">Mã SV</th><td class="p-2 font-semibold text-gray-800">{{ student.student_id }}</td></tr>
+          <tr><th class="p-2 text-gray-600">Họ tên</th><td class="p-2">{{ student.student_name }}</td></tr>
+          <tr><th class="p-2 text-gray-600">Email</th><td class="p-2">{{ student.student_email }}</td></tr>
+          <tr><th class="p-2 text-gray-600">Lớp hành chính</th><td class="p-2">{{ student.administrative_class }}</td></tr>
+          <tr><th class="p-2 text-gray-600">CPA</th><td class="p-2 text-blue-600 font-bold">{{ student.CPA }}</td></tr>
+        </table>
+      </div>
+
+      <!-- Dashboard học viện -->
+      <h2 class="text-2xl font-semibold text-blue-600 mb-4">🏫 Thông tin học viện</h2>
+      <div class="relative w-full overflow-hidden">
+        <div id="academySlider" class="flex transition-transform duration-700 ease-in-out">
+          {% for card in academy_cards %}
+          <a href="{{ card.link }}" class="flex-none w-[320px] sm:w-[360px] bg-white rounded-2xl shadow-md p-4 mx-3 hover:shadow-lg transition-transform transform hover:scale-[1.02]">
+            <img src="{{ card.image }}" alt="{{ card.title }}" class="w-full h-40 object-cover rounded-lg mb-3">
+            <h3 class="text-lg font-bold text-blue-700 mb-1">{{ card.title }}</h3>
+            <p class="text-gray-600 text-sm">Thông tin chi tiết sắp được cập nhật...</p>
+          </a>
+          {% endfor %}
+        </div>
+      </div>
+
+      <script>
+        const slider = document.getElementById("academySlider");
+        const cards = slider.children;
+        const cardWidth = 300; // ~320px + margin
+        let index = 0;
+
+        function slide() {
+          index++;
+          if (index > cards.length - 4) { // đến gần cuối thì quay lại đầu
+            index = 0;
+          }
+          slider.style.transform = `translateX(-${index * cardWidth}px)`;
+        }
+
+        let autoSlide = setInterval(slide, 3000);
+
+        // Dừng khi rê chuột vào slider
+        slider.addEventListener("mouseenter", () => clearInterval(autoSlide));
+        slider.addEventListener("mouseleave", () => autoSlide = setInterval(slide, 3000));
+      </script>
+
+    {% elif active_tab == 'lop-hanh-chinh' %}
+      <h1 class="text-2xl font-bold text-blue-700 mb-6">🏫 Danh sách lớp hành chính: {{ student.administrative_class }}</h1>
+      <div class="bg-white shadow-md rounded-xl p-5">
+        <table class="w-full border border-gray-300">
+          <thead class="bg-gray-100">
+            <tr>
+              <th class="px-3 py-2 border ">Mã SV</th>
+              <th class="px-3 py-2 border">Họ tên</th>
+              <th class="px-3 py-2 border">Email</th>
+              <th class="px-3 py-2 border">CPA</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for s in students %}
+            <tr>
+              <td class="px-3 py-2 border text-center">{{ s.student_id }}</td>
+              <td class="px-3 py-2 border text-center">{{ s.student_name }}</td>
+              <td class="px-3 py-2 border text-center">{{ s.student_email }}</td>
+              <td class="px-3 py-2 border text-center">{{ s.CPA }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+    {% elif active_tab == 'lop-tin-chi' %}
+      <h1 class="text-2xl font-bold text-blue-700 mb-6">📘 Lớp tín chỉ</h1>
+      <div class="bg-white shadow-md rounded-xl p-5">
+        <table class="w-full border border-gray-300">
+          <thead class="bg-gray-100">
+            <tr>
+              <th class="px-3 py-2 border">Môn Học</th>
+              <th class="px-3 py-2 border">Mã Lớp</th>
+              <th class="px-3 py-2 border">Giảng viên</th>
+              <th class="px-3 py-2 border">Số tín chỉ</th>
+              <th class="px-3 py-2 border">Thao tác</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for s in course_class %}
+            <tr>
+              <td class="px-3 py-2 border text-center">{{ s.course_name }}</td>
+              <td class="px-3 py-2 border text-center">{{ s.course_class_id }}</td>
+              <td class="px-3 py-2 border text-center">{{ s.lecturer_name }}</td>
+              <td class="px-3 py-2 border text-center">{{ s.volume }}</td>
+              <td class="px-3 py-2 border text-center">
+                <a href="{{ url_for('views.class_details', course_class_id=s.course_class_id) }}" 
+                  class="inline-block bg-gray-100 text-black px-3 py-1.5 rounded-lg shadow hover:bg-blue-300 hover:shadow-md transition">
+                  Xem lớp học
+                </a>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+    {% elif active_tab == 'hoc-tap' %}
+      <h1 class="text-2xl font-bold text-blue-700 mb-6">📝 Kết quả học tập</h1>
+      <div class="bg-white shadow-md rounded-xl p-5">
+        <table class="w-full border border-gray-300">
+          <thead class="bg-gray-100">
+            <tr>
+              <th class="p-2 text-gray-600">Môn học</th>
+              <th class="p-2 text-gray-600">Chuyên cần</th>
+              <th class="p-2 text-gray-600">Giữa kỳ</th>
+              <th class="p-2 text-gray-600">Cuối kỳ</th>
+              <th class="p-2 text-gray-600">Tổng kết</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for s in scores %}
+            <tr>
+              <td class="p-2 text-center">{{ s.course_name }}</td>
+              <td class="p-2 text-center">{{ s.attendane_scr }}</td>
+              <td class="p-2 text-center">{{ s.midterm_scr }}</td>
+              <td class="p-2 text-center">{{ s.finalterm_scr }}</td>
+              <td class="p-2 text-center">{{ s.final_grade }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% endif %}
+  </main>
+  <script>
+    feather.replace();
+
+    // Toggle Tính năng
+    const toggleBtn = document.getElementById("toggleFeatures");
+    const featuresList = document.getElementById("featuresList");
+    const arrow = document.getElementById("arrow");
+
+    toggleBtn.addEventListener("click", () => {
+      featuresList.classList.toggle("hidden");
+      arrow.classList.toggle("rotate-180");
+    });
+  </script>
+</body>
+</html>

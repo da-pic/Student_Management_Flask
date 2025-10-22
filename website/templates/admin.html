@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Dashboard Quản trị</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss/dist/tailwind.min.css">
+  <script src="https://unpkg.com/feather-icons"></script>
+</head>
+<body class="bg-gradient-to-r from-blue-200 to-blue-50 min-h-screen flex relative">
+
+  <!-- Sidebar -->
+  <aside class="w-64 bg-white shadow-lg rounded-r-3xl p-5 flex flex-col justify-between">
+    <div>
+      <h1 class="text-2xl font-bold text-blue-600 mb-6">ADMIN</h1>
+      <nav id="sidebar" class="space-y-3">
+        <a href="/admin?tab=danh-sach-sinh-vien"
+           class="block p-3 rounded-xl transition 
+                  {{ 'bg-blue-200 font-semibold' if active_tab == 'danh-sach-sinh-vien' else 'hover:bg-gray-100' }}">
+          👤 Danh Sách Sinh Viên
+        </a>
+        <a href="/admin?tab=danh-sach-giang-vien"
+           class="block p-3 rounded-xl transition 
+                  {{ 'bg-blue-200 font-semibold' if active_tab == 'danh-sach-giang-vien' else 'hover:bg-gray-100' }}">
+          🏫 Danh Sách Giảng Viên
+        </a>
+        <a href="{{ url_for('admin_proposal.show_proposal') }}"
+           class="block p-3 rounded-xl transition 
+                  {{ 'bg-blue-200 font-semibold' if active_tab == 'de-xuat' else 'hover:bg-gray-100' }}">
+          📝 Đề xuất
+        </a>
+      </nav>
+    </div>
+
+    <!-- Khu vực nút Đăng xuất -->
+    <div class="space-y-2 mt-4 border-t pt-4">
+      <form action="{{ url_for('auth.logout') }}">
+        <button type="submit"
+                class="w-full bg-red-100 text-red-600 font-medium px-4 py-2 rounded-lg hover:bg-red-200 transition">
+          🚪 Đăng xuất
+        </button>
+      </form>
+    </div>
+  </aside>
+
+  <!-- Main content -->
+  <main class="flex-1 p-8">
+
+    {# -------- TAB: DANH SÁCH SINH VIÊN -------- #}
+    {% if active_tab == 'danh-sach-sinh-vien' %}
+      <h2 class="text-2xl font-bold text-blue-700 mb-6">📌 Danh sách lớp hành chính</h2>
+      <div class="bg-white shadow-md rounded-xl p-5">
+        <table class="w-full border border-gray-200">
+          <thead class="bg-gray-100">
+            <tr>
+              <th class="px-4 py-2 border">Mã lớp hành chính</th>
+              <th class="px-4 py-2 border">Số lượng sinh viên</th>
+              <th class="px-4 py-2 border">Thao tác</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for lc in administrative_classes %}
+            <tr class="hover:bg-gray-50">
+              <td class="px-4 py-2 border text-center">{{ lc.administrative_class }}</td>
+              <td class="px-4 py-2 border text-center">{{ lc.student_count }}</td>
+              <td class="px-4 py-2 border text-center">
+                <a href="{{ url_for('admin_views.manage_students', administrative_class=lc.administrative_class) }}"
+                   class="text-blue-600 hover:underline">
+                  Xem sinh viên
+                </a>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+    {# -------- TAB: DANH SÁCH GIẢNG VIÊN -------- #}
+    {% elif active_tab == 'danh-sach-giang-vien' %}
+      <h2 class="text-2xl font-bold text-blue-700 mb-6">🏫 Danh sách giảng viên</h2>
+
+      <!-- Form thêm giảng viên -->
+      <form action="{{ url_for('admin_views.add_lecturer') }}" method="POST"
+            class="bg-white shadow-md rounded-xl p-4 mb-6 flex items-end gap-4">
+        <div>
+          <label class="block text-sm text-gray-700">Mã GV</label>
+          <input type="text" name="lecturer_id" required class="border rounded-lg px-3 py-2 w-40">
+        </div>
+        <div>
+          <label class="block text-sm text-gray-700">Họ tên</label>
+          <input type="text" name="lecturer_name" required class="border rounded-lg px-3 py-2 w-56">
+        </div>
+        <div>
+          <label class="block text-sm text-gray-700">Email</label>
+          <input type="email" name="lecturer_email" required class="border rounded-lg px-3 py-2 w-56">
+        </div>
+        <button type="submit"
+                class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
+          ➕ Thêm giảng viên
+        </button>
+      </form>
+
+      <!-- Bảng danh sách giảng viên -->
+      <div class="bg-white shadow-md rounded-xl p-5">
+        <table class="w-full border border-gray-200">
+          <thead class="bg-gray-100">
+            <tr>
+              <th class="px-4 py-2 border">Mã GV</th>
+              <th class="px-4 py-2 border">Họ tên</th>
+              <th class="px-4 py-2 border">Email</th>
+              <th class="px-4 py-2 border">Thao tác</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for gv in lecturers %}
+            <tr class="hover:bg-gray-50">
+              <td class="px-4 py-2 border text-center">{{ gv.lecturer_id }}</td>
+              <td class="px-4 py-2 border">{{ gv.lecturer_name }}</td>
+              <td class="px-4 py-2 border">{{ gv.lecturer_email }}</td>
+              <td class="px-4 py-2 border text-center flex justify-center gap-2">
+                <!-- Nút sửa -->
+                <button type="button"
+                        onclick="openEditModal('{{ gv.lecturer_id }}', '{{ gv.lecturer_name }}', '{{ gv.lecturer_email }}')"
+                        class="bg-yellow-400 hover:bg-yellow-500 text-white px-3 py-1 rounded-lg">
+                  ✏️ Sửa
+                </button>
+                <!-- Nút xóa -->
+                <form action="{{ url_for('admin_views.delete_lecturer', lecturer_id=gv.lecturer_id) }}"
+                      method="POST" onsubmit="return confirm('Bạn có chắc muốn xóa giảng viên này?');">
+                  <button type="submit"
+                          class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-lg">
+                    🗑️ Xóa
+                  </button>
+                </form>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% endif %}
+      <!-- Modal chỉnh sửa giảng viên -->
+      <div id="editLecturerModal"
+           class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+        <div class="bg-white rounded-xl shadow-lg p-6 w-[400px] relative">
+          <h3 class="text-xl font-semibold mb-4 text-blue-700">✏️ Chỉnh sửa giảng viên</h3>
+          <form id="editLecturerForm" method="POST">
+            <input type="hidden" name="lecturer_id" id="edit_lecturer_id">
+
+            <div class="mb-3">
+              <label class="block text-sm text-gray-700">Họ tên</label>
+              <input type="text" name="lecturer_name" id="edit_lecturer_name"
+                     class="border rounded-lg px-3 py-2 w-full" required>
+            </div>
+
+            <div class="mb-3">
+              <label class="block text-sm text-gray-700">Email</label>
+              <input type="email" name="lecturer_email" id="edit_lecturer_email"
+                     class="border rounded-lg px-3 py-2 w-full" required>
+            </div>
+
+            <div class="flex justify-end gap-3 mt-5">
+              <button type="button" onclick="closeEditModal()"
+                      class="bg-gray-300 hover:bg-gray-400 text-gray-800 px-4 py-2 rounded-lg">
+                Hủy
+              </button>
+              <button type="submit"
+                      class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg">
+                💾 Lưu thay đổi
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+  <!-- JS xử lý modal -->
+  <script>
+    function openEditModal(id, name, email) {
+      const modal = document.getElementById('editLecturerModal');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+      document.getElementById('edit_lecturer_id').value = id;
+      document.getElementById('edit_lecturer_name').value = name;
+      document.getElementById('edit_lecturer_email').value = email;
+      document.getElementById('editLecturerForm').action = `/admin/edit_lecturer/${id}`;
+    }
+
+    function closeEditModal() {
+      const modal = document.getElementById('editLecturerModal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+  </script>
+
+</body>
+</html>

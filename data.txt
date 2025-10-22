@@ -1,0 +1,76 @@
+INSERT INTO Admin(admin_id, admin_name, password)
+VALUES ('admin01', 'Cheese', '123');
+
+INSERT INTO Student (student_id, administrative_class, student_name, student_gender, student_bd, student_address, student_contact, student_email, password, CPA)
+VALUES
+('S001', 'D23CQCN01', 'Nguyen Van A', 'Nam', '2001-01-15', 'Ha Noi', '0901111111', 's001@stu.edu', '123', 3.50),
+('S002', 'D23CQCN01', 'Tran Thi B', 'Nu', '2001-03-20', 'Hai Phong', '0902222222', 's002@stu.edu', '123', 3.20),
+('S003', 'D23CQCN02', 'Le Van C', 'Nam', '2001-06-18', 'Nam Dinh', '0903333333', 's003@stu.edu', '123', 2.90),
+('S004', 'D23CQCN02', 'Pham Thi D', 'Nu', '2001-08-25', 'Ha Noi', '0904444444', 's004@stu.edu', '123', 3.70),
+('S005', 'D23CQCN03', 'Hoang Van E', 'Nam', '2001-02-11', 'Thai Binh', '0905555555', 's005@stu.edu', '123', 2.80),
+('S006', 'D23CQCN03', 'Do Thi F', 'Nu', '2001-09-09', 'Ha Noi', '0906666666', 's006@stu.edu', '123', 3.10),
+('S007', 'D23CQCN04', 'Nguyen Van G', 'Nam', '2001-10-05', 'Hai Duong', '0907777777', 's007@stu.edu', '123', 3.00),
+('S008', 'D23CQCN04', 'Pham Thi H', 'Nu', '2001-12-12', 'Ha Noi', '0908888888', 's008@stu.edu', '123', 3.40),
+('S009', 'D23CQCN05', 'Tran Van I', 'Nam', '2001-05-01', 'Ninh Binh', '0909999999', 's009@stu.edu', '123', 2.75),
+('S010', 'D23CQCN05', 'Le Thi J', 'Nu', '2001-07-22', 'Ha Noi', '0910000000', 's010@stu.edu', '123', 3.25),
+
+('S011', 'D23CQCN01', 'Nguyen Van K', 'Nam', '2001-01-10', 'Ha Noi', '0911111111', 's011@stu.edu', '123', 3.15),
+('S012', 'D23CQCN01', 'Tran Thi L', 'Nu', '2001-03-14', 'Hai Phong', '0912222222', 's012@stu.edu', '123', 2.95),
+('S013', 'D23CQCN02', 'Le Van M', 'Nam', '2001-02-28', 'Nam Dinh', '0913333333', 's013@stu.edu', '123', 3.35),
+('S014', 'D23CQCN02', 'Pham Thi N', 'Nu', '2001-05-19', 'Ha Noi', '0914444444', 's014@stu.edu', '123', 2.85),
+('S015', 'D23CQCN03', 'Hoang Van O', 'Nam', '2001-09-23', 'Thai Binh', '0915555555', 's015@stu.edu', '123', 3.60),
+('S016', 'D23CQCN03', 'Do Thi P', 'Nu', '2001-08-03', 'Ha Noi', '0916666666', 's016@stu.edu', '123', 3.05),
+('S017', 'D23CQCN04', 'Nguyen Van Q', 'Nam', '2001-11-11', 'Hai Duong', '0917777777', 's017@stu.edu', '123', 3.45),
+('S018', 'D23CQCN04', 'Pham Thi R', 'Nu', '2001-06-27', 'Ha Noi', '0918888888', 's018@stu.edu', '123', 3.20),
+('S019', 'D23CQCN05', 'Tran Van S', 'Nam', '2001-07-30', 'Ninh Binh', '0919999999', 's019@stu.edu', '123', 2.70),
+('S020', 'D23CQCN05', 'Le Thi T', 'Nu', '2001-12-05', 'Ha Noi', '0920000000', 's020@stu.edu', '123', 3.55),
+
+('S021', 'D23CQCN01', 'Nguyen Van U', 'Nam', '2001-01-25', 'Ha Noi', '0921111111', 's021@stu.edu', '123', 2.80),
+('S022', 'D23CQCN01', 'Tran Thi V', 'Nu', '2001-04-08', 'Hai Phong', '0922222222', 's022@stu.edu', '123', 3.00),
+('S023', 'D23CQCN02', 'Le Van W', 'Nam', '2001-09-14', 'Nam Dinh', '0923333333', 's023@stu.edu', '123', 3.65),
+('S024', 'D23CQCN02', 'Pham Thi X', 'Nu', '2001-03-17', 'Ha Noi', '0924444444', 's024@stu.edu', '123', 3.10),
+('S025', 'D23CQCN03', 'Hoang Van Y', 'Nam', '2001-08-12', 'Thai Binh', '0925555555', 's025@stu.edu', '123', 2.95),
+('S026', 'D23CQCN03', 'Do Thi Z', 'Nu', '2001-06-06', 'Ha Noi', '0926666666', 's026@stu.edu', '123', 3.25),
+('S027', 'D23CQCN04', 'Nguyen Van AA', 'Nam', '2001-10-22', 'Hai Duong', '0927777777', 's027@stu.edu', '123', 3.40),
+('S028', 'D23CQCN04', 'Pham Thi AB', 'Nu', '2001-11-03', 'Ha Noi', '0928888888', 's028@stu.edu', '123', 3.30),
+('S029', 'D23CQCN05', 'Tran Van AC', 'Nam', '2001-05-25', 'Ninh Binh', '0929999999', 's029@stu.edu', '123', 2.85),
+('S030', 'D23CQCN05', 'Le Thi AD', 'Nu', '2001-07-09', 'Ha Noi', '0930000000', 's030@stu.edu', '123', 3.60),
+
+('S031', 'D23CQCN01', 'Nguyen Van AE', 'Nam', '2001-02-03', 'Ha Noi', '0931111111', 's031@stu.edu', '123', 3.10),
+('S032', 'D23CQCN01', 'Tran Thi AF', 'Nu', '2001-08-20', 'Hai Phong', '0932222222', 's032@stu.edu', '123', 3.50),
+('S033', 'D23CQCN02', 'Le Van AG', 'Nam', '2001-04-13', 'Nam Dinh', '0933333333', 's033@stu.edu', '123', 2.90),
+('S034', 'D23CQCN02', 'Pham Thi AH', 'Nu', '2001-06-10', 'Ha Noi', '0934444444', 's034@stu.edu', '123', 3.35),
+('S035', 'D23CQCN03', 'Hoang Van AI', 'Nam', '2001-12-15', 'Thai Binh', '0935555555', 's035@stu.edu', '123', 3.25),
+('S036', 'D23CQCN03', 'Do Thi AJ', 'Nu', '2001-09-05', 'Ha Noi', '0936666666', 's036@stu.edu', '123', 3.05),
+('S037', 'D23CQCN04', 'Nguyen Van AK', 'Nam', '2001-01-30', 'Hai Duong', '0937777777', 's037@stu.edu', '123', 2.75),
+('S038', 'D23CQCN04', 'Pham Thi AL', 'Nu', '2001-03-09', 'Ha Noi', '0938888888', 's038@stu.edu', '123', 3.15),
+('S039', 'D23CQCN05', 'Tran Van AM', 'Nam', '2001-07-18', 'Ninh Binh', '0939999999', 's039@stu.edu', '123', 3.45),
+('S040', 'D23CQCN05', 'Le Thi AN', 'Nu', '2001-10-28', 'Ha Noi', '0940000000', 's040@stu.edu', '123', 3.50);
+
+INSERT INTO Lecturer (lecturer_id, lecturer_name, lecturer_contact, lecturer_email, lecturer_phone, lecturer_faculty, password)
+VALUES
+('L001', 'Dr. Nguyen Minh Tuan', '0123456789', 'tuan@university.edu', '0905123123', 'Khoa Công nghệ thông tin', 'pass1'),
+('L002', 'ThS. Le Thi Lan', '0987654321', 'lan@university.edu', '0905432123', 'Khoa Kinh tế', 'pass2'),
+('L003', 'TS. Pham Quoc Bao', '0933222111', 'bao@university.edu', '0905333444', 'Khoa Điện tử Viễn thông', 'pass3'),
+('L004', 'ThS. Tran Hoang Nam', '0911122233', 'nam@university.edu', '0905666777', 'Khoa Toán - Tin', 'pass4'),
+('L005', 'PGS. Do Thi Mai', '0922333444', 'mai@university.edu', '0905999888', 'Khoa Cơ khí', 'pass5');
+
+INSERT INTO Course (course_id, course_name, volume)
+VALUES
+('C001', 'Cơ sở dữ liệu', 3),
+('C002', 'Lập trình Python', 3),
+('C003', 'Kinh tế vi mô', 3),
+('C004', 'Xác suất thống kê', 3),
+('C005', 'Điện tử cơ bản', 3);
+
+INSERT INTO course_class 
+(course_class_id, lecturer_id, course_id, class_day, start_time, end_time, class_room, semester, academic_year, start_date, end_date, week_start, week_end)
+VALUES
+('CC001', 'L001', 'C001', 1, '07:30:00', '09:30:00', 'A201', 'Học kỳ 1', '2024-2025', '2024-09-02', '2024-12-20', 1, 16),
+('CC002', 'L001', 'C002', 2, '09:45:00', '11:45:00', 'B101', 'Học kỳ 1', '2024-2025', '2024-09-03', '2024-12-21', 1, 16),
+('CC003', 'L002', 'C003', 3, '13:00:00', '15:00:00', 'C302', 'Học kỳ 1', '2024-2025', '2024-09-04', '2024-12-22', 1, 16),
+('CC004', 'L004', 'C004', 4, '15:15:00', '17:15:00', 'A105', 'Học kỳ 2', '2024-2025', '2025-02-10', '2025-05-25', 1, 15),
+('CC005', 'L003', 'C005', 5, '07:30:00', '09:30:00', 'D204', 'Học kỳ 2', '2024-2025', '2025-02-14', '2025-05-30', 1, 15),
+('CC006', 'L005', 'C005', 1, '09:45:00', '11:45:00', 'B202', 'Học kỳ 2', '2024-2025', '2025-02-17', '2025-05-28', 1, 15),
+('CC007', 'L002', 'C003', 2, '13:00:00', '15:00:00', 'C101', 'Học kỳ 2', '2024-2025', '2025-02-18', '2025-05-29', 1, 15),
+('CC008', 'L001', 'C001', 3, '15:15:00', '17:15:00', 'A301', 'Học kỳ 2', '2024-2025', '2025-02-19', '2025-05-30', 1, 15);

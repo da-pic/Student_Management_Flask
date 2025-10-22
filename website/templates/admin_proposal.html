@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>📊 Quản lý đề xuất điểm</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss/dist/tailwind.min.css">
+</head>
+<body class="bg-gradient-to-r from-blue-100 to-blue-50 min-h-screen p-8">
+
+  <h1 class="text-3xl font-bold text-blue-700 mb-6 text-center">📋 Danh sách đề xuất điểm</h1>
+  <div class="mb-4">
+    <a href="{{ url_for('admin_views.admin') }}" 
+        class="inline-block bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold py-2 px-4 rounded-lg">
+        🔙 Quay lại
+    </a>
+  </div>
+  <div class="bg-white shadow-lg rounded-xl p-6">
+    <table class="w-full border border-gray-300 text-center">
+      <thead class="bg-gray-100">
+        <tr>
+          <th class="border px-4 py-2">Mã đề xuất</th>
+          <th class="border px-4 py-2">Mã SV</th>
+          <th class="border px-4 py-2">Lớp học phần</th>
+          <th class="border px-4 py-2">Giảng viên</th>
+          <th class="border px-4 py-2">Chuyên cần</th>
+          <th class="border px-4 py-2">Giữa kỳ</th>
+          <th class="border px-4 py-2">Cuối kỳ</th>
+          <th class="border px-4 py-2">Trạng thái</th>
+          <th class="border px-4 py-2">Thao tác</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for p in proposals %}
+        <tr class="hover:bg-gray-50">
+          <td class="border px-3 py-2">{{ p.proposal_id }}</td>
+          <td class="border px-3 py-2">{{ p.student_id }}</td>
+          <td class="border px-3 py-2">{{ p.course_class_id }}</td>
+          <td class="border px-3 py-2">{{ p.lecturer_id }}</td>
+          <td class="border px-3 py-2">{{ p.proposed_attendance_scr }}</td>
+          <td class="border px-3 py-2">{{ p.proposed_midterm_scr }}</td>
+          <td class="border px-3 py-2">{{ p.proposed_finalterm_scr }}</td>
+          <td class="border px-3 py-2 font-medium 
+                     {% if p._status == 'Approved' %}text-green-600
+                     {% elif p._status == 'Denied' %}text-red-600
+                     {% else %}text-yellow-600{% endif %}">
+            {{ p._status }}
+          </td>
+          <td class="border px-3 py-2">
+            {% if p._status == 'Pending' %}
+            <div class="flex justify-center gap-2">
+              <form action="{{ url_for('admin_proposal.approve_proposal', proposal_id=p.proposal_id) }}" method="POST">
+                <button type="submit" class="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded-lg">
+                  ✔️ Duyệt
+                </button>
+              </form>
+              <form action="{{ url_for('admin_proposal.deny_proposal', proposal_id=p.proposal_id) }}" method="POST">
+                <button type="submit" class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-lg">
+                  ❌ Từ chối
+                </button>   
+              </form>
+            </div>
+            {% else %}
+              <span class="text-gray-500 italic">Đã xử lý</span>
+            {% endif %}
+          </td>
+        </tr>
+        {% else %}
+        <tr>
+          <td colspan="9" class="text-gray-500 italic py-4">Chưa có đề xuất nào.</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+</body>
+</html>

@@ -1,0 +1,34 @@
+-- Trigger Update
+DELIMITER //
+CREATE TRIGGER scr_before_update
+BEFORE UPDATE ON Score
+FOR EACH ROW
+BEGIN
+    -- Phân quyền admin qua session backend. 
+    IF @is_admin IS NULL OR @is_admin = FALSE THEN
+
+        -- Ghi log proposed_scr
+        INSERT INTO proposed_scr (
+            proposed_attendance_scr,
+            proposed_midterm_scr,
+            proposed_finalterm_scr,
+            student_id,
+            course_class_id,
+            lecturer_id,
+            _status
+        )
+        VALUES ( NEW.attendane_scr,
+            NEW.midterm_scr,
+            NEW.finalterm_scr,
+            OLD.student_id,
+            OLD.course_class_id,
+            @lecturer_id, -- SET lecturer_id qua session backend.
+            'Pending'
+        );
+        SET NEW.attendane_scr = OLD.attendane_scr;
+        SET NEW.midterm_scr = OLD.midterm_scr;
+        SET NEW.finalterm_scr = OLD.finalterm_scr;
+    END IF;
+END //
+
+DELIMITER ;

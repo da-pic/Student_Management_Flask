@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>{{ card.title }}</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100 min-h-screen">
+  <div class="max-w-3xl mx-auto p-6">
+
+    <!-- Nút quay lại -->
+    <a href="{{ url_for('views.home', student_id=student_id) }}" 
+       class="inline-flex items-center text-blue-600 hover:text-blue-800 font-medium mb-6">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+      </svg>
+      Quay lại trang chính
+    </a>
+
+    <!-- Card chi tiết -->
+    <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
+      <img src="{{ card.image }}" alt="{{ card.title }}" class="w-full h-64 object-cover">
+      <div class="p-6">
+        <h1 class="text-3xl font-bold text-blue-700 mb-4">{{ card.title }}</h1>
+        <p class="text-gray-700 text-lg mb-4">{{ card.content }}</p>
+        <p class="text-gray-600 leading-relaxed">{{ card.details }}</p>
+      </div>
+    </div>
+
+  </div>
+</body>
+</html>

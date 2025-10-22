@@ -1,0 +1,107 @@
+
+    # Student table.
+	CREATE TABLE Student (
+		student_id VARCHAR(20) PRIMARY KEY,
+		administrative_class VARCHAR(50),
+		student_name VARCHAR(100) NOT NULL,
+		student_gender VARCHAR(10),
+		student_bd DATE,
+		student_address VARCHAR(200),
+		student_contact VARCHAR(20),
+		student_email VARCHAR(100),
+		password VARCHAR(100) NOT NULL,
+		CPA DECIMAL(3,2)
+	);
+
+	# Course table.
+	CREATE TABLE Course (
+		course_id VARCHAR(20) PRIMARY KEY,
+		course_name VARCHAR(100),
+        volume INT
+	);
+
+	# Lecturer table.
+	CREATE TABLE Lecturer (
+		lecturer_id VARCHAR(20) PRIMARY KEY,
+		lecturer_name VARCHAR(100) NOT NULL,
+		lecturer_contact VARCHAR(20),
+		lecturer_email VARCHAR(100),
+		lecturer_phone VARCHAR(20),
+		lecturer_faculty VARCHAR(100),
+		lecturer_avatar VARCHAR(255),
+		password VARCHAR(100) NOT NULL
+	);
+    
+    CREATE TABLE Admin (
+		admin_id VARCHAR(20) PRIMARY KEY,
+		admin_name VARCHAR(100),
+		password VARCHAR(100) NOT NULL
+	);
+
+	# Course Class table.
+	CREATE TABLE course_class (
+		course_class_id VARCHAR(20) NOT NULL,
+		lecturer_id VARCHAR(20) DEFAULT NULL,
+		course_id VARCHAR(20) DEFAULT NULL,
+		class_day TINYINT UNSIGNED DEFAULT NULL COMMENT '1=Thứ 2, 2=Thứ 3, ..., 7=Chủ nhật',
+		start_time TIME DEFAULT NULL,
+		end_time TIME DEFAULT NULL,
+		class_room VARCHAR(50) DEFAULT NULL,
+		semester VARCHAR(20) DEFAULT NULL,
+		academic_year VARCHAR(20) DEFAULT NULL,
+		start_date DATE DEFAULT NULL,
+		end_date DATE DEFAULT NULL,
+		week_start INT UNSIGNED DEFAULT NULL COMMENT 'Tuần học bắt đầu',
+		week_end INT UNSIGNED DEFAULT NULL COMMENT 'Tuần học kết thúc',
+
+		PRIMARY KEY (course_class_id),
+
+		-- Index để tăng tốc độ truy vấn liên kết
+		KEY lecturer_id (lecturer_id),
+		KEY course_id (course_id),
+
+		-- Ràng buộc khóa ngoại giống bảng 2
+		FOREIGN KEY (lecturer_id)
+		REFERENCES Lecturer(lecturer_id)
+		ON DELETE SET NULL
+		ON UPDATE CASCADE,
+
+		CONSTRAINT fk_course_class_course
+		FOREIGN KEY (course_id)
+		REFERENCES Course(course_id)
+		ON DELETE SET NULL
+		ON UPDATE CASCADE
+	) ;
+
+	# Enrollment table: (n-m) relationship between Student - Course Class.
+	CREATE TABLE Enrollment (
+		student_id VARCHAR(20),
+		course_class_id VARCHAR(20),
+		PRIMARY KEY (student_id, course_class_id),
+		FOREIGN KEY (student_id) REFERENCES Student(student_id),
+		FOREIGN KEY (course_class_id) REFERENCES Course_Class(course_class_id)
+	);
+
+	# Score table.
+	CREATE TABLE Score (
+		student_id VARCHAR(20) NOT NULL,
+		course_class_id VARCHAR(20) NOT NULL,
+		attendane_scr DECIMAL(4,1),
+		midterm_scr DECIMAL(4,1),
+		finalterm_scr DECIMAL(4,1),
+		PRIMARY KEY (student_id, course_class_id),
+		FOREIGN KEY (student_id) REFERENCES Student(student_id) ON DELETE CASCADE,
+		FOREIGN KEY (course_class_id) REFERENCES Course_Class(course_class_id) ON DELETE CASCADE
+	);
+	CREATE TABLE proposed_scr (
+		proposal_id INT AUTO_INCREMENT PRIMARY KEY,
+		proposed_attendance_scr DECIMAL(4,1),
+		proposed_midterm_scr DECIMAL(4,1),
+		proposed_finalterm_scr DECIMAL(4,1),
+		student_id VARCHAR(20) NOT NULL,
+		course_class_id VARCHAR(20) NOT NULL,
+        lecturer_id VARCHAR(20),
+        _status VARCHAR(20) DEFAULT "Pending",
+		FOREIGN KEY (student_id, course_class_id) REFERENCES Score(student_id, course_class_id) ON DELETE CASCADE,
+        FOREIGN KEY (lecturer_id) REFERENCES Lecturer(lecturer_id)
+	);

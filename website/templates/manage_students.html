@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Quản lý sinh viên</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss/dist/tailwind.min.css">
+</head>
+<body class="bg-gradient-to-r from-blue-100 to-blue-50 min-h-screen p-8">
+
+  <!-- Nút quay lại -->
+  <div class="mb-4">
+    <a href="{{ url_for('admin_views.admin') }}" 
+       class="inline-flex items-center bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded-lg shadow-md transition">
+      ⬅️ Quay lại trang chính
+    </a>
+  </div>
+
+  <h1 class="text-3xl font-bold text-blue-700 mb-6">📋 Quản lý sinh viên - {{ administrative_class }}</h1>
+
+  <!-- Form thêm sinh viên -->
+  <form action="{{ url_for('admin_views.add_student', administrative_class=administrative_class) }}" 
+        method="POST" 
+        class="bg-white shadow-md rounded-xl p-4 mb-6 flex items-end gap-4">
+    <div>
+      <label class="block text-sm text-gray-700">Mã SV</label>
+      <input type="text" name="student_id" required class="border rounded-lg px-3 py-2 w-40">
+    </div>
+    <div>
+      <label class="block text-sm text-gray-700">Họ tên</label>
+      <input type="text" name="student_name" required class="border rounded-lg px-3 py-2 w-48">
+    </div>
+    <div>
+      <label class="block text-sm text-gray-700">Giới tính</label>
+      <select name="student_gender" class="border rounded-lg px-3 py-2 w-28">
+        <option value="Nam">Nam</option>
+        <option value="Nữ">Nữ</option>
+      </select>
+    </div>
+    <div>
+      <label class="block text-sm text-gray-700">Ngày sinh</label>
+      <input type="date" name="student_bd" class="border rounded-lg px-3 py-2 w-44">
+    </div>
+    <div>
+      <label class="block text-sm text-gray-700">Email</label>
+      <input type="email" name="student_email" class="border rounded-lg px-3 py-2 w-56">
+    </div>
+    <div>
+      <label class="block text-sm text-gray-700">SĐT</label>
+      <input type="text" name="student_contact" class="border rounded-lg px-3 py-2 w-40">
+    </div>
+    <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
+      ➕ Thêm sinh viên
+    </button>
+  </form>
+
+  <!-- Bảng danh sách sinh viên -->
+  <div class="bg-white shadow-md rounded-xl p-5">
+    <table class="w-full border border-gray-200 text-center">
+      <thead class="bg-gray-100">
+        <tr>
+          <th class="px-3 py-2 border">Mã SV</th>
+          <th class="px-3 py-2 border">Họ tên</th>
+          <th class="px-3 py-2 border">Giới tính</th>
+          <th class="px-3 py-2 border">Ngày sinh</th>
+          <th class="px-3 py-2 border">Email</th>
+          <th class="px-3 py-2 border">Liên hệ</th>
+          <th class="px-3 py-2 border">Thao tác</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for s in students %}
+        <tr class="hover:bg-gray-50">
+          <td class="border px-3 py-2">{{ s.student_id }}</td>
+          <td class="border px-3 py-2">{{ s.student_name }}</td>
+          <td class="border px-3 py-2">{{ s.student_gender }}</td>
+          <td class="border px-3 py-2">{{ s.student_bd }}</td>
+          <td class="border px-3 py-2">{{ s.student_email }}</td>
+          <td class="border px-3 py-2">{{ s.student_contact }}</td>
+          <td class="border px-3 py-2 flex justify-center gap-2">
+            <button 
+              class="bg-yellow-400 hover:bg-yellow-500 text-white px-3 py-1 rounded-lg edit-btn"
+              data-student='{{ s | tojson }}'>
+              ✏️ Sửa
+            </button>
+            <form action="{{ url_for('admin_views.delete_student', student_id=s.student_id) }}" 
+                  method="POST" 
+                  onsubmit="return confirm('Bạn có chắc muốn xóa sinh viên này?');">
+              <button type="submit" class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-lg">🗑️ Xóa</button>
+            </form>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Modal chỉnh sửa -->
+  <div id="editModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center">
+    <div class="bg-white rounded-2xl p-6 w-1/2 shadow-lg relative">
+      <h2 class="text-xl font-bold mb-4 text-blue-600">✏️ Chỉnh sửa sinh viên</h2>
+      <form id="editForm" method="POST" class="space-y-3">
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm text-gray-600">Họ tên</label>
+            <input type="text" name="student_name" id="student_name" class="w-full border rounded-lg px-3 py-2">
+          </div>
+          <div>
+            <label class="block text-sm text-gray-600">Giới tính</label>
+            <select name="student_gender" id="student_gender" class="w-full border rounded-lg px-3 py-2">
+              <option value="Nam">Nam</option>
+              <option value="Nữ">Nữ</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm text-gray-600">Ngày sinh</label>
+            <input type="date" name="student_bd" id="student_bd" class="w-full border rounded-lg px-3 py-2">
+          </div>
+          <div>
+            <label class="block text-sm text-gray-600">Email</label>
+            <input type="email" name="student_email" id="student_email" class="w-full border rounded-lg px-3 py-2">
+          </div>
+          <div>
+            <label class="block text-sm text-gray-600">Liên hệ</label>
+            <input type="text" name="student_contact" id="student_contact" class="w-full border rounded-lg px-3 py-2">
+          </div>
+          <div>
+            <label class="block text-sm text-gray-600">Địa chỉ</label>
+            <input type="text" name="student_address" id="student_address" class="w-full border rounded-lg px-3 py-2">
+          </div>
+        </div>
+        <div class="flex justify-end gap-3 mt-4">
+          <button type="button" id="cancelEdit" class="px-4 py-2 bg-gray-300 rounded-lg hover:bg-gray-400">Hủy</button>
+          <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Lưu</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    const editModal = document.getElementById('editModal');
+    const editForm = document.getElementById('editForm');
+
+    document.getElementById('cancelEdit').addEventListener('click', () => {
+      editModal.classList.add('hidden');
+    });
+
+    document.querySelectorAll('.edit-btn').forEach(button => {
+      button.addEventListener('click', () => {
+        const data = JSON.parse(button.dataset.student);
+
+        document.getElementById('student_name').value = data.student_name || '';
+        document.getElementById('student_gender').value = data.student_gender || 'Nam';
+        document.getElementById('student_bd').value = data.student_bd || '';
+        document.getElementById('student_email').value = data.student_email || '';
+        document.getElementById('student_contact').value = data.student_contact || '';
+        document.getElementById('student_address').value = data.student_address || '';
+
+        editForm.action = `/admin/update-student/${data.student_id}`;
+
+        editModal.classList.remove('hidden');
+        editModal.classList.add('flex');
+      });
+    });
+  </script>
+
+</body>
+</html>

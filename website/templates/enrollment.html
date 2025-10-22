@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<a href="{{ url_for('views.home', student_id=student_id) }}"
+   class="fixed top-4 left-4 bg-gray-300 text-gray-800 px-4 py-2 rounded-lg shadow hover:bg-gray-400 transition">
+  ⬅️ Quay lại
+</a>
+
+<head>
+  <meta charset="UTF-8">
+  <title>Đăng ký tín chỉ</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss/dist/tailwind.min.css">
+</head>
+
+<body class="bg-gray-100 p-10">
+  <!-- Phần Đăng ký tín chỉ -->
+  <div class="max-w-5xl mx-auto bg-white shadow-lg rounded-xl p-6 mb-10">
+    <h1 class="text-2xl font-bold text-blue-600 mb-6 text-center">📘 Đăng ký tín chỉ</h1>
+
+    <!-- Flash messages cho đăng ký -->
+    {% with messages = get_flashed_messages(with_categories=true, category_filter=['success', 'error']) %}
+      {% if messages %}
+        <div class="mb-4">
+          {% for category, message in messages %}
+            <div class="p-3 rounded-lg
+                        {% if category == 'success' %} bg-green-100 text-green-700
+                        {% elif category == 'error' %} bg-red-100 text-red-700 {% endif %}">
+              {{ message }}
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    <!-- Form đăng ký -->
+    <form method="POST" action="/enrollment/{{ student_id }}/register">
+      <table class="w-full border border-gray-300 text-center">
+        <thead class="bg-gray-200">
+          <tr>
+            <th class="px-4 py-2 border">Mã môn</th>
+            <th class="px-4 py-2 border">Tên môn học</th>
+            <th class="px-4 py-2 border">Mã lớp</th>
+            <th class="px-4 py-2 border">Số tín chỉ</th>
+            <th class="px-4 py-2 border">Giảng viên</th>
+            <th class="px-4 py-2 border">Chọn</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% set registered_ids = registered_class | map(attribute='course_class_id') | list %}
+          {% for c in course_class %}
+            {% set registered = c.course_class_id in registered_ids %}
+            <tr class="hover:bg-gray-50 {% if registered %} bg-gray-100 text-gray-400 opacity-60 {% endif %}">
+              <td class="px-4 py-2 border">{{ c.course_id }}</td>
+              <td class="px-4 py-2 border">{{ c.course_name }}</td>
+              <td class="px-4 py-2 border">{{ c.course_class_id }}</td>
+              <td class="px-4 py-2 border">{{ c.volume }}</td>
+              <td class="px-4 py-2 border">{{ c.lecturer_name }}</td>
+              <td class="px-4 py-2 border">
+                <input type="checkbox"
+                      name="selected_courses"
+                      value="{{ c.course_class_id }}"
+                      class="w-5 h-5"
+                      {% if registered %} disabled {% endif %}>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+
+      <div class="mt-6 text-right">
+        <button type="submit" class="bg-blue-500 text-white px-5 py-2 rounded-lg hover:bg-blue-600">
+          Đăng ký
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Phần Môn đã đăng ký -->
+  <div class="max-w-5xl mx-auto bg-white shadow-lg rounded-xl p-6">
+    <h1 class="text-2xl font-bold text-blue-600 mb-6 text-center">📗 Môn đã đăng ký</h1>
+
+    <!-- Flash messages cho huỷ -->
+    {% with messages = get_flashed_messages(with_categories=true, category_filter=['cancel_success', 'cancel_error']) %}
+      {% if messages %}
+        <div class="mb-4">
+          {% for category, message in messages %}
+            <div class="p-3 rounded-lg
+                        {% if category == 'cancel_success' %} bg-green-100 text-green-700
+                        {% elif category == 'cancel_error' %} bg-red-100 text-red-700 {% endif %}">
+              {{ message }}
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    <!-- Form huỷ -->
+    <form method="POST" action="/enrollment/{{ student_id }}/cancel">
+      <table class="w-full border border-gray-300 text-center">
+        <thead class="bg-gray-200">
+          <tr>
+            <th class="px-4 py-2 border">Mã môn</th>
+            <th class="px-4 py-2 border">Tên môn học</th>
+            <th class="px-4 py-2 border">Mã lớp</th>
+            <th class="px-4 py-2 border">Số tín chỉ</th>
+            <th class="px-4 py-2 border">Giảng viên</th>
+            <th class="px-4 py-2 border">Chọn</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for c in registered_class %}
+          <tr class="hover:bg-gray-50">
+            <td class="px-4 py-2 border">{{ c.course_id }}</td>
+            <td class="px-4 py-2 border">{{ c.course_name }}</td>
+            <td class="px-4 py-2 border">{{ c.course_class_id }}</td>
+            <td class="px-4 py-2 border">{{ c.volume }}</td>
+            <td class="px-4 py-2 border">{{ c.lecturer_name }}</td>
+            <td class="px-4 py-2 border">
+              <input type="checkbox" name="selected_cancel_courses" value="{{ c.course_class_id }}" class="w-5 h-5">
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+
+      <div class="mt-6 text-right">
+        <button type="submit" class="bg-red-500 text-white px-5 py-2 rounded-lg hover:bg-red-600">
+          Huỷ đăng ký
+        </button>
+      </div>
+    </form>
+  </div>
+</body>
+</html>
